@@ -21,3 +21,9 @@ this will create:
 # Run locally
 
 Check contents of `local.sh` 
+
+# Known bugs
+- the deploy.sh script creates a binding for the SA to have storage admin over the bucker. This does not work properly and must be address in the gcp console.
+
+# Further improvements
+- [ ] add custom password
