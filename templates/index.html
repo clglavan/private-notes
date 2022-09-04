@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Private Notes</title>
+    <script src="https://cdn.jsdelivr.net/npm/simple-crypto-js@2.5.0/dist/SimpleCrypto.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script> -->
+<style>
+    html, body {
+        height: 100%;
+        font-family: monospace;
+    }
+    /* h1 {text-align: center;}
+    p {text-align: center;}
+    div {text-align: center;} */
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+        /* border: 3px solid green;  */
+    }
+    .input-text {
+        background: #fff;
+        box-shadow: 3px 3px 3px #ccc;   
+        padding: 60px 30px 30px;
+    }
+    .input-box textarea{
+        max-width:100%;
+    }
+    input[type=button], input[type=submit], input[type=reset] {
+        background-color: white;
+        /* border: none; */
+        color: black;
+        padding: 16px 32px;
+        text-decoration: none;
+        margin: 4px 2px;
+        cursor: pointer;
+        box-shadow: 3px 3px 3px #ccc;   
+        border: black 1px solid;
+    }
+    .description {
+        /* line-height: 1px; */
+        margin-top: 0%;
+    }
+</style>
+</head>
+<body>
+
+<div  class="center">
+    <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
+    <h1>Send private notes securely</h1>
+
+    <div class="input-box">
+        <textarea id="secureNote" name="secureNote" class="input-text" rows="4" cols="50" placeholder="Notes are encrypted at browser level..."></textarea>
+        <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/hivefleet" target="_blank">clglavan/hivefleet</a> )</p>
+    </div> 
+    <input type="hidden" name="key" id="key"> 
+    <input type="submit" value="Encrypt & Send" onsubmit="e.preventDefault();">
+    </form>
+</div>
+
+<script>
+console.log(document.getElementById("private-notes"));
+var form = document.getElementById("private-notes");
+form.addEventListener("submit", function(evt) {
+    evt.preventDefault();
+    secureNote = document.getElementById("secureNote").value;
+    // window.history.back();
+    console.log(secureNote);
+    
+    const _secretKey = SimpleCrypto.generateRandom(256);
+    // console.log(_secretKey);
+    const simpleCrypto = new SimpleCrypto(_secretKey)
+
+    const plainText = secureNote;
+    const cipherText = simpleCrypto.encrypt(plainText);
+    // console.log("Encryption process...")
+    // console.log("Plain Text    : " + plainText)
+    // console.log("Cipher Text   : " + cipherText)
+    // const decipherText = simpleCrypto.decrypt(cipherText)
+    // console.log("... and then decryption...")
+    // console.log("Decipher Text : " + decipherText)
+    // console.log("... done.")
+    // const hashkey = CryptoJS.MD5(cipherText).toString();
+    document.getElementById("key").value = _secretKey;
+    document.getElementById("secureNote").value = cipherText;
+    evt.currentTarget.submit();
+}, true);
+
+</script>
+</body>
+</html>
