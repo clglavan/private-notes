@@ -49,12 +49,14 @@
 
 <div  class="center">
     <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
-    <h1>Send private notes securely</h1>
+    <h1>Private notes <i class="fa fa-lock" aria-hidden="true"></i></h1>
+    <h3>Send self-destructing private notes securely</h3>
 
     <div class="input-box">
         <textarea id="secureNote" name="secureNote" class="input-text" rows="4" cols="50" placeholder="Notes will self-destruct after they are read..."></textarea>
         <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
     </div> 
+    <input type="hidden" name="function" id="function" value="create"> 
     <input type="hidden" name="key" id="key"> 
     <input type="submit" value="Encrypt & Send" onsubmit="e.preventDefault();">
     </form>

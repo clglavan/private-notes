@@ -27,6 +27,10 @@ type SecretNote struct {
 type IndexPageData struct {
 	PostUrl string
 }
+type ConfirmPageData struct {
+	PostUrl string
+	Key     string
+}
 
 type SuccessPageData struct {
 	SecretUrl string
@@ -44,43 +48,15 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		key := r.URL.Query().Get("key")
 		if key != "" {
-			ctx := context.Background()
-			client, err := storage.NewClient(ctx)
-			if err != nil {
-				fmt.Println("Error: ", err)
+			data := ConfirmPageData{
+				PostUrl: GCP_CF_NAME,
+				Key:     key,
 			}
-			rc, err := client.Bucket("private-notes").Object(key).NewReader(ctx)
-			if err != nil {
-				fmt.Println("Error: ", err)
-				// http.Error(w, "Note does not exist", http.StatusNotFound)
-				tmpl := template.Must(template.ParseFiles(function_path + "templates/error.html"))
-				w.Header().Set("Content-Type", "text/html; charset=utf-8")
-				tmpl.Execute(w, "")
-				return
-			}
-			// defer
-			slurp, err := ioutil.ReadAll(rc)
-			rc.Close()
-			if err != nil {
-				fmt.Println("Error: ", err)
-				return
-			}
-			fmt.Println(string(slurp))
-
-			if err := client.Bucket("private-notes").Object(key).Delete(ctx); err != nil {
-				fmt.Println("Error: ", err)
-			}
-
-			data := SecretNote{
-				Key:        key,
-				SecureNote: string(slurp),
-			}
-			tmpl := template.Must(template.ParseFiles(function_path + "templates/result.html"))
+			tmpl := template.Must(template.ParseFiles(function_path + "templates/confirm.html"))
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			tmpl.Execute(w, data)
 			return
 		} else {
-			log.Printf("get")
 			data := IndexPageData{
 				PostUrl: GCP_CF_NAME,
 			}
@@ -90,43 +66,89 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	case http.MethodPost:
-		log.Printf("post")
-		// ##################### Get the form data
-		r.ParseForm()
-		var t SecretNote
-		t.Key = r.FormValue("key")
-		t.SecureNote = r.FormValue("secureNote")
-		// log.Println(t.Test)
-		log.Println(t.Key)
-		log.Println(t.SecureNote)
-		// ##################### Prepare the url
-		data := SuccessPageData{
-			SecretUrl: string(GCP_REGION + "-" + GCP_PROJECT + ".cloudfunctions.net/" + GCP_CF_NAME + "?key=" + t.Key),
-		}
-		// ##################### Save the cipherText to bucket
-		ctx := context.Background()
-		client, err := storage.NewClient(ctx)
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-		wc := client.Bucket("private-notes").Object(t.Key).NewWriter(ctx)
-		wc.ContentType = "text/plain"
-		// wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
-		if _, err := wc.Write([]byte(t.SecureNote)); err != nil {
-			// TODO: handle error.
-			// Note that Write may return nil in some error situations,
-			// so always check the error from Close.
-			fmt.Println("Error: ", err)
-		}
-		if err := wc.Close(); err != nil {
-			fmt.Println("Error: ", err)
-		}
+		function := r.FormValue("function")
+		switch function {
+		case "create":
+			log.Printf("post")
+			// ##################### Get the form data
+			r.ParseForm()
+			var t SecretNote
+			t.Key = r.FormValue("key")
+			t.SecureNote = r.FormValue("secureNote")
+			// log.Println(t.Test)
+			log.Println(t.Key)
+			log.Println(t.SecureNote)
+			// ##################### Prepare the url
+			data := SuccessPageData{
+				SecretUrl: string(GCP_REGION + "-" + GCP_PROJECT + ".cloudfunctions.net/" + GCP_CF_NAME + "?key=" + t.Key),
+			}
+			// ##################### Save the cipherText to bucket
+			ctx := context.Background()
+			client, err := storage.NewClient(ctx)
+			if err != nil {
+				fmt.Println("Error: ", err)
+			}
+			wc := client.Bucket("private-notes").Object(t.Key).NewWriter(ctx)
+			wc.ContentType = "text/plain"
+			// wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
+			if _, err := wc.Write([]byte(t.SecureNote)); err != nil {
+				// TODO: handle error.
+				// Note that Write may return nil in some error situations,
+				// so always check the error from Close.
+				fmt.Println("Error: ", err)
+			}
+			if err := wc.Close(); err != nil {
+				fmt.Println("Error: ", err)
+			}
 
-		// ##################### Render the reponse template
-		tmpl := template.Must(template.ParseFiles(function_path + "templates/success.html"))
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		tmpl.Execute(w, data)
-		return
+			// ##################### Render the reponse template
+			tmpl := template.Must(template.ParseFiles(function_path + "templates/success.html"))
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			tmpl.Execute(w, data)
+			return
+		case "retrieve":
+			key := r.FormValue("key")
+			log.Printf("ok")
+			if key != "" {
+				log.Printf("all good")
+				ctx := context.Background()
+				client, err := storage.NewClient(ctx)
+				if err != nil {
+					fmt.Println("Error: ", err)
+				}
+				rc, err := client.Bucket("private-notes").Object(key).NewReader(ctx)
+				if err != nil {
+					fmt.Println("Error: ", err)
+					// http.Error(w, "Note does not exist", http.StatusNotFound)
+					tmpl := template.Must(template.ParseFiles(function_path + "templates/error.html"))
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					tmpl.Execute(w, "")
+					return
+				}
+				// defer
+				slurp, err := ioutil.ReadAll(rc)
+				rc.Close()
+				if err != nil {
+					fmt.Println("Error: ", err)
+					return
+				}
+				fmt.Println(string(slurp))
+
+				if err := client.Bucket("private-notes").Object(key).Delete(ctx); err != nil {
+					fmt.Println("Error: ", err)
+				}
+
+				data := SecretNote{
+					Key:        key,
+					SecureNote: string(slurp),
+				}
+				tmpl := template.Must(template.ParseFiles(function_path + "templates/result.html"))
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				tmpl.Execute(w, data)
+
+			}
+
+		}
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
