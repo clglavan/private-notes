@@ -28,3 +28,6 @@ Check contents of `local.sh`
 # Further improvements
 - [x] make decryption by choice, with "view note" button
 - [ ] add custom password
+- [ ] refactor code
+- [ ] refactor html with layout
+- [ ] enable easy custom branding
