@@ -24,7 +24,6 @@ Check contents of `local.sh`
 
 # Known bugs
 - the deploy.sh script creates a binding for the SA to have storage admin over the bucker. This does not work properly and must be address in the gcp console.
-- if you pass the link through a channel that performs an ajax request on it, it will self destruct before the other person opens it
 # Further improvements
 - [x] make decryption by choice, with "view note" button
 - [ ] add custom password
