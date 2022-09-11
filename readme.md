@@ -27,7 +27,7 @@ Check contents of `local.sh`
 - if you pass the link through a channel that performs an ajax request on it, it will self destruct before the other person opens it
 # Further improvements
 - [x] make decryption by choice, with "view note" button
-- [ ] add custom password
+- [x] add custom password
 - [ ] refactor code
 - [ ] refactor html with layout
 - [ ] enable easy custom branding

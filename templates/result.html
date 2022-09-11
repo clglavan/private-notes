@@ -29,7 +29,7 @@
     .input-box textarea{
         max-width:100%;
     }
-    input[type=button], input[type=submit], input[type=reset] button {
+    input[type=button],input[type=text], input[type=submit], input[type=reset] button {
         background-color: white;
         /* border: none; */
         color: black;
@@ -44,6 +44,13 @@
         /* line-height: 1px; */
         margin-top: 0%;
     }
+    .hide {
+        display: none;
+    }
+
+    .show {
+        display: block;
+    }
 </style>
 </head>
 <body>
@@ -52,11 +59,15 @@
     <h1>Thannk you for using private notes <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
     <h3>This note has been destroyed, below is the only copy.</h1>
 
+    <div class="input-box hide" id="passwordBox" >
+        <p>This message is password protected <input type="text"   name="secretPassword" id="secretPassword" placeholder="Enter your password"></p>
+        
+    </div>
     <div class="input-box">
         <p id="plaintext" class="input-text"></p>
         <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
     </div> 
-    <!-- <button type="button" value="Copy to clipboard" onclick="copyToClipboard()">Copy to clipboard</button> -->
+    <input type="button" class="hide" id="show" value="Show" onclick="showMessage()">
 </div>
 
 <script>
@@ -67,12 +78,28 @@
     // console.log("Encryption process...")
     // console.log("Plain Text    : " + plainText)
     // console.log("Cipher Text   : " + cipherText)
-    const decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+
+    try{
+    var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+    document.getElementById("plaintext").innerHTML = decipherText;
+    }catch(e) {
+        var passwordBox = document.getElementById("passwordBox");
+        passwordBox.classList.toggle("hide");
+        passwordBox.classList.toggle("show");
+        var show = document.getElementById("show");
+        show.classList.toggle("hide");
+        show.classList.toggle("show");
+    }
     // console.log("... and then decryption...")
     // console.log("Decipher Text : " + decipherText)
     // console.log("... done.")
     // const hashkey = CryptoJS.MD5(cipherText).toString();
-    document.getElementById("plaintext").innerHTML = decipherText;
+    function showMessage(){
+        var secretPassword = document.getElementById("secretPassword");
+        const simpleCrypto = new SimpleCrypto(secretPassword.value)
+        var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+        document.getElementById("plaintext").innerHTML = decipherText;
+    }
 </script>
 </body>
 </html>

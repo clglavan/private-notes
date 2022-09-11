@@ -3,7 +3,8 @@
 <head>
     <title>Private Notes</title>
     <script src="https://cdn.jsdelivr.net/npm/simple-crypto-js@2.5.0/dist/SimpleCrypto.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
 <style>
     html, body {
         height: 100%;
@@ -28,7 +29,7 @@
     .input-box textarea{
         max-width:100%;
     }
-    input[type=button], input[type=submit], input[type=reset] {
+    input[type=button],input[type=text], input[type=submit], input[type=reset] {
         background-color: white;
         /* border: none; */
         color: black;
@@ -43,12 +44,20 @@
         /* line-height: 1px; */
         margin-top: 0%;
     }
+    .hide {
+        display: none;
+    }
+
+    .show {
+        display: block;
+    }
 </style>
 </head>
 <body>
 
 <div  class="center">
     <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
+    <input type="hidden" name="function" id="function" value="create"> 
     <h1>Private notes <i class="fa fa-lock" aria-hidden="true"></i></h1>
     <h3>Send self-destructing private notes securely</h3>
 
@@ -56,7 +65,9 @@
         <textarea id="secureNote" name="secureNote" class="input-text" rows="4" cols="50" placeholder="Notes will self-destruct after they are read..."></textarea>
         <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
     </div> 
-    <input type="hidden" name="function" id="function" value="create"> 
+    
+    <p>Optionally, enter a password for your note<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
+    <input type="text" style="width: 100%" class="hide" name="secretPassword" id="secretPassword" placeholder="[Optional] Fill in a password, save it and send it securely to the other party">
     <input type="hidden" name="key" id="key"> 
     <input type="submit" value="Encrypt & Send" onsubmit="e.preventDefault();">
     </form>
@@ -67,29 +78,48 @@ console.log(document.getElementById("private-notes"));
 var form = document.getElementById("private-notes");
 form.addEventListener("submit", function(evt) {
     evt.preventDefault();
+    
     secureNote = document.getElementById("secureNote").value;
     // window.history.back();
-    console.log(secureNote);
+    // console.log(secureNote);
     
-    const _secretKey = SimpleCrypto.generateRandom(256);
+    var passwordCheck = document.getElementById("passwordCheck");
+
+    var _secretKey=""
+    if(passwordCheck.checked){
+        var secretPassword = document.getElementById("secretPassword");
+        _secretKey = secretPassword.value;
+    }else{
+        _secretKey = SimpleCrypto.generateRandom(256);
+    }
+
     // console.log(_secretKey);
     const simpleCrypto = new SimpleCrypto(_secretKey)
 
     const plainText = secureNote;
     const cipherText = simpleCrypto.encrypt(plainText);
-    // console.log("Encryption process...")
-    // console.log("Plain Text    : " + plainText)
-    // console.log("Cipher Text   : " + cipherText)
-    // const decipherText = simpleCrypto.decrypt(cipherText)
-    // console.log("... and then decryption...")
-    // console.log("Decipher Text : " + decipherText)
-    // console.log("... done.")
-    // const hashkey = CryptoJS.MD5(cipherText).toString();
-    document.getElementById("key").value = _secretKey;
+    if(passwordCheck.checked){
+        const hashkey = CryptoJS.MD5(cipherText).toString();
+        document.getElementById("key").value = hashkey;
+    }else{
+        document.getElementById("key").value = _secretKey;
+    }
+    
     document.getElementById("secureNote").value = cipherText;
     evt.currentTarget.submit();
 }, true);
 
+function showPassword() {
+  var password = document.getElementById("secretPassword");
+  password.classList.toggle("hide");
+  password.classList.toggle("show");
+  if (password.classList.contains("show")){
+    password.required = true;
+  }else{
+    password.required = false;
+  }
+
+}
 </script>
 </body>
 </html>
