@@ -1,0 +1,2 @@
+{{define "baseJavascript"}}
+{{end}}

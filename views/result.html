@@ -1,0 +1,37 @@
+{{define "content"}}
+    <h1>Thannk you for using private notes <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
+    <h3>This note has been destroyed, below is the only copy.</h1>
+
+    <div class="input-box hide" id="passwordBox" >
+        <p>This message is password protected <input type="text"   name="secretPassword" id="secretPassword" placeholder="Enter your password"></p>
+        
+    </div>
+    <div class="input-box">
+        <p id="plaintext" class="input-text"></p>
+        <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
+    </div> 
+    <input type="button" class="hide" id="show" value="Show" onclick="showMessage()">
+{{end}}
+
+{{define "pageJavascript"}}
+const simpleCrypto = new SimpleCrypto("{{.Key}}")
+
+try{
+    var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+    document.getElementById("plaintext").innerHTML = decipherText;
+}catch(e) {
+    var passwordBox = document.getElementById("passwordBox");
+    passwordBox.classList.toggle("hide");
+    passwordBox.classList.toggle("show");
+    var show = document.getElementById("show");
+    show.classList.toggle("hide");
+    show.classList.toggle("show");
+}
+
+function showMessage(){
+    var secretPassword = document.getElementById("secretPassword");
+    const simpleCrypto = new SimpleCrypto(secretPassword.value)
+    var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+    document.getElementById("plaintext").innerHTML = decipherText;
+}
+{{end}}

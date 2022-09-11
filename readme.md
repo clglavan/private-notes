@@ -27,6 +27,8 @@ Check contents of `local.sh`
 # Further improvements
 - [x] make decryption by choice, with "view note" button
 - [x] add custom password
+- [x] refactor html with layout
 - [ ] refactor code
-- [ ] refactor html with layout
+- [ ] make config.yaml for easier app behaviour tweaks and branding
 - [ ] enable easy custom branding
+- [ ] add copy to clipboard button for secret link

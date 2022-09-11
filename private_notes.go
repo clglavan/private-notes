@@ -52,7 +52,8 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 				PostUrl: GCP_CF_NAME,
 				Key:     key,
 			}
-			tmpl := template.Must(template.ParseFiles(function_path + "templates/confirm.html"))
+			tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/confirm.html"))
+			tmpl.ParseGlob(function_path + "views/assets/*")
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			tmpl.Execute(w, data)
 			return
@@ -60,7 +61,8 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 			data := IndexPageData{
 				PostUrl: GCP_CF_NAME,
 			}
-			tmpl := template.Must(template.ParseFiles(function_path + "templates/index.html"))
+			tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/index.html"))
+			tmpl.ParseGlob(function_path + "views/assets/*")
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			tmpl.Execute(w, data)
 			return
@@ -102,7 +104,8 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// ##################### Render the reponse template
-			tmpl := template.Must(template.ParseFiles(function_path + "templates/success.html"))
+			tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/success.html"))
+			tmpl.ParseGlob(function_path + "views/assets/*")
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			tmpl.Execute(w, data)
 			return
@@ -120,7 +123,8 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Println("Error: ", err)
 					// http.Error(w, "Note does not exist", http.StatusNotFound)
-					tmpl := template.Must(template.ParseFiles(function_path + "templates/error.html"))
+					tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/error.html"))
+					tmpl.ParseGlob(function_path + "views/assets/*")
 					w.Header().Set("Content-Type", "text/html; charset=utf-8")
 					tmpl.Execute(w, "")
 					return
@@ -142,7 +146,8 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 					Key:        key,
 					SecureNote: string(slurp),
 				}
-				tmpl := template.Must(template.ParseFiles(function_path + "templates/result.html"))
+				tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/result.html"))
+				tmpl.ParseGlob(function_path + "views/assets/*")
 				w.Header().Set("Content-Type", "text/html; charset=utf-8")
 				tmpl.Execute(w, data)
 

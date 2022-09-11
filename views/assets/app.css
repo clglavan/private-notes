@@ -1,0 +1,48 @@
+{{define "baseCss"}}
+html, body {
+    height: 100%;
+    font-family: monospace;
+}
+/* h1 {text-align: center;}
+p {text-align: center;}
+div {text-align: center;} */
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    /* border: 3px solid green;  */
+}
+.input-text {
+    background: #fff;
+    box-shadow: 3px 3px 3px #ccc;   
+    padding: 60px 30px 30px;
+    border: black 1px solid;
+}
+.input-box textarea{
+    max-width:100%;
+}
+input[type=button],input[type=text], input[type=submit], input[type=reset] {
+    background-color: white;
+    /* border: none; */
+    color: black;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    box-shadow: 3px 3px 3px #ccc;   
+    border: black 1px solid;
+}
+.description {
+    /* line-height: 1px; */
+    margin-top: 0%;
+}
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+{{end}}
