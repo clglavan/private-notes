@@ -29,6 +29,9 @@ Check contents of `local.sh`
 - [x] add custom password
 - [x] refactor html with layout
 - [ ] refactor code
+    - [ ] implement routing
+    - [ ] implement middlewares
+    - [ ] implement logging
 - [ ] make config.yaml for easier app behaviour tweaks and branding
 - [ ] enable easy custom branding
 - [ ] add copy to clipboard button for secret link
