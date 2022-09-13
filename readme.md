@@ -1,6 +1,6 @@
 # Private Notes - send self-distructing notes over the internet
 
-![private-notes](private-notes.gif)
+![private_notes](private_notes.gif)
 
 Send private notes over the internet as one time links that destroy themselves after they are read. Optionally chose a password for your note.
 
