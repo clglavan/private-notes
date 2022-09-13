@@ -1,12 +1,9 @@
 # Private Notes - send self-distructing notes over the internet
 
-Send private notes over the internet as one time links that destroy themselves after they are read.
-
 ![private-notes](private-notes.gif)
 
-Or password protect your notes
+Send private notes over the internet as one time links that destroy themselves after they are read. Optionally chose a password for your note.
 
-![private-notes-password](private-notes-password.gif)
 This repo wishes to provide an open-source alternative for managed solutions of similar usecase. Advantages include future possibility for branding and contents of messages being saved on the organization's own cloud resources.
 
 # Get started
