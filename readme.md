@@ -1,8 +1,12 @@
 # Private Notes - send self-distructing notes over the internet
 
-![Alt Text](private-notes.gif)
-
 Send private notes over the internet as one time links that destroy themselves after they are read.
+
+![private-notes](private-notes.gif)
+
+Or password protect your notes
+
+![private-notes-password](private-notes-password.gif)
 
 clone this repository and run ./deploy.sh with two parameters, project id and region, in a shell environment where g cloud is configured and have elevated privileges over that project.
 ```bash
