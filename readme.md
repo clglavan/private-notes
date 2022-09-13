@@ -7,6 +7,9 @@ Send private notes over the internet as one time links that destroy themselves a
 Or password protect your notes
 
 ![private-notes-password](private-notes-password.gif)
+This repo wishes to provide an open-source alternative for managed solutions of similar usecase. Advantages include future possibility for branding and contents of messages being saved on the organization's own cloud resources.
+
+# Get started
 
 clone this repository and run ./deploy.sh with two parameters, project id and region, in a shell environment where g cloud is configured and have elevated privileges over that project.
 ```bash
@@ -33,6 +36,9 @@ Check contents of `local.sh`
 - [x] add custom password
 - [x] refactor html with layout
 - [ ] refactor code
+    - [ ] implement routing
+    - [ ] implement middlewares
+    - [ ] implement logging
 - [ ] make config.yaml for easier app behaviour tweaks and branding
 - [ ] enable easy custom branding
 - [ ] add copy to clipboard button for secret link
