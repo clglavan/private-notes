@@ -17,4 +17,6 @@ else
     echo "Key already exists"
 fi
 
+cd ../
+
 gcloud functions deploy privateNotes --project $1 --runtime go116 --region=$2 --trigger-http --service-account $saEmail  --allow-unauthenticated --set-env-vars=GCP_PROJECT=$1,GCP_REGION=$2,GCP_CF_NAME=privateNotes

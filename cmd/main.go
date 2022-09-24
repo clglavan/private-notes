@@ -2,20 +2,13 @@ package main
 
 import (
 	"log"
-	"os"
+	"net/http"
 
 	// Blank-import the function package so the init() runs
-	_ "glavan.tech/privateNotes"
-	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"glavan.tech/privateNotes"
 )
 
 func main() {
-	// Use PORT environment variable, or default to 8080.
-	port := "8080"
-	if envPort := os.Getenv("PORT"); envPort != "" {
-		port = envPort
-	}
-	if err := funcframework.Start(port); err != nil {
-		log.Fatalf("funcframework.Start: %v\n", err)
-	}
+	http.HandleFunc("/", privateNotes.PrivateNotes)
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
