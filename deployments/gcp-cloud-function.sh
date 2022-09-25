@@ -13,6 +13,7 @@ gcloud projects add-iam-policy-binding $1 \
 echo "Create service account key"
 if [ ! -f "key.json" ]; then
    gcloud iam service-accounts keys create key.json --iam-account=$saEmail
+   mv key.json ../key.json
 else
     echo "Key already exists"
 fi
