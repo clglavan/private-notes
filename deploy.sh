@@ -4,7 +4,7 @@ echo "Create service account"
 gcloud iam service-accounts create private-notes-sa --display-name="Private-Notes-SA" --project $1
 saEmail=$(gcloud iam service-accounts list --project $1 --format="value(email)" --filter="displayName=Private-Notes-SA")
 echo "Create the bucket"
-gcloud alpha storage buckets create gs://private-notes --project $1
+gcloud alpha storage buckets create gs://$3 --project $1
 echo "Add $saEmail to gs storage"
 gcloud projects add-iam-policy-binding $1 \
     --member=serviceAccount:$saEmail \
@@ -17,4 +17,8 @@ else
     echo "Key already exists"
 fi
 
-gcloud functions deploy privateNotes --project $1 --runtime go116 --region=$2 --trigger-http --service-account $saEmail  --allow-unauthenticated --set-env-vars=GCP_PROJECT=$1,GCP_REGION=$2,GCP_CF_NAME=privateNotes
+gcloud functions deploy privateNotes --project $1 --runtime go116 --region=$2 --trigger-http --service-account $saEmail  --allow-unauthenticated --set-env-vars=GCP_PROJECT=$1,GCP_REGION=$2,GCP_CF_NAME=privateNotes,GCP_BUCKET_NAME=$3
+
+
+# Example
+# ./deploy.sh private-notes-363416 europe-west2 {my-suffix}

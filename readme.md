@@ -27,7 +27,8 @@ this will create:
 Check contents of `local.sh` 
 
 # Known bugs
-- the deploy.sh script creates a binding for the SA to have storage admin over the bucker. This does not work properly and must be address in the gcp console.
+- [ ] the deploy.sh script creates a binding for the SA to have storage admin over the bucker. This does not work properly and must be address in the gcp console.
+- [ ] if open a password-protected note, trying to decrypt with a wrong password will not work ( as expected ) but will also trigger the note to be destroyed.
 # Further improvements
 - [x] make decryption by choice, with "view note" button
 - [x] add custom password

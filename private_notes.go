@@ -44,6 +44,7 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 	GCP_PROJECT := os.Getenv("GCP_PROJECT")
 	GCP_REGION := os.Getenv("GCP_REGION")
 	GCP_CF_NAME := os.Getenv("GCP_CF_NAME")
+	GCP_BUCKET_NAME := os.Getenv("GCP_BUCKET_NAME")
 	switch r.Method {
 	case http.MethodGet:
 		key := r.URL.Query().Get("key")
@@ -90,7 +91,7 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println("Error: ", err)
 			}
-			wc := client.Bucket("private-notes").Object(t.Key).NewWriter(ctx)
+			wc := client.Bucket(GCP_BUCKET_NAME).Object(t.Key).NewWriter(ctx)
 			wc.ContentType = "text/plain"
 			// wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
 			if _, err := wc.Write([]byte(t.SecureNote)); err != nil {
@@ -119,7 +120,7 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Println("Error: ", err)
 				}
-				rc, err := client.Bucket("private-notes").Object(key).NewReader(ctx)
+				rc, err := client.Bucket(GCP_BUCKET_NAME).Object(key).NewReader(ctx)
 				if err != nil {
 					fmt.Println("Error: ", err)
 					// http.Error(w, "Note does not exist", http.StatusNotFound)
@@ -138,7 +139,7 @@ func privateNotes(w http.ResponseWriter, r *http.Request) {
 				}
 				fmt.Println(string(slurp))
 
-				if err := client.Bucket("private-notes").Object(key).Delete(ctx); err != nil {
+				if err := client.Bucket(GCP_BUCKET_NAME).Object(key).Delete(ctx); err != nil {
 					fmt.Println("Error: ", err)
 				}
 
