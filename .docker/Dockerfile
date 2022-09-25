@@ -9,12 +9,9 @@ RUN go mod download
 
 COPY . /private-notes/
 
-RUN cd cmd
-RUN GOOS=linux GARCH=amd64 go build -o /private-notes/main
-RUN chmod 755 /private-notes/main
-
-# RUN ls -la
+RUN GOOS=linux GARCH=amd64 go build -o /private-notes/main ./main
+RUN chmod 755 /private-notes/main/main
 
 EXPOSE 80
 
-CMD ["/bin/sh","-c","cd /private-notes; /private-notes/main" ]
+CMD ["/bin/sh","-c","cd /private-notes; /private-notes/main/main" ]

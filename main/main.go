@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 
-	// Blank-import the function package so the init() runs
 	"glavan.tech/privateNotes"
 )
 
