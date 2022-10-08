@@ -5,8 +5,8 @@ import (
 	"os"
 
 	// Blank-import the function package so the init() runs
-	_ "glavan.tech/privateNotes"
 	"github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	_ "glavan.tech/privateNotes"
 )
 
 func main() {
