@@ -38,22 +38,32 @@ type SuccessPageData struct {
 
 func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 
-	// os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "./key.json") // for local development
-	ENVIRONMENT := os.Getenv("ENVIRONMENT")
-	function_path := "./"
-	if ENVIRONMENT == "cloudfunction" {
-		function_path = "./serverless_function_source_code/"
-	}
-
 	GCP_PROJECT := os.Getenv("GCP_PROJECT")
 	GCP_REGION := os.Getenv("GCP_REGION")
-	GCP_CF_NAME := os.Getenv("GCP_CF_NAME")
+	PUBLIC_URL := os.Getenv("PUBLIC_URL")
+	GCP_BUCKET_NAME := os.Getenv("GCP_BUCKET_NAME")
+
+	ENVIRONMENT := os.Getenv("ENVIRONMENT")
+	function_path := "./"
+
+	secretURL := "/"
+
+	switch ENVIRONMENT {
+	case "cloudfunction":
+		function_path = "./serverless_function_source_code/"
+		secretURL = GCP_REGION + "-" + GCP_PROJECT + ".cloudfunctions.net/" + PUBLIC_URL + "?key="
+	case "docker":
+		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "/private-notes/key.json")
+	case "cloudbuild":
+		secretURL = PUBLIC_URL + "?key="
+	}
+
 	switch r.Method {
 	case http.MethodGet:
 		key := r.URL.Query().Get("key")
 		if key != "" {
 			data := ConfirmPageData{
-				PostUrl: GCP_CF_NAME,
+				PostUrl: PUBLIC_URL,
 				Key:     key,
 			}
 			tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/confirm.html"))
@@ -63,7 +73,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			data := IndexPageData{
-				PostUrl: GCP_CF_NAME,
+				PostUrl: PUBLIC_URL,
 			}
 			tmpl := template.Must(template.ParseFiles(function_path+"views/layout.html", function_path+"views/index.html"))
 			tmpl.ParseGlob(function_path + "views/assets/*")
@@ -86,7 +96,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			log.Println(t.SecureNote)
 			// ##################### Prepare the url
 			data := SuccessPageData{
-				SecretUrl: string(GCP_REGION + "-" + GCP_PROJECT + ".cloudfunctions.net/" + GCP_CF_NAME + "?key=" + t.Key),
+				SecretUrl: string(secretURL + t.Key),
 			}
 			// ##################### Save the cipherText to bucket
 			ctx := context.Background()
@@ -94,7 +104,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				fmt.Println("Error: ", err)
 			}
-			wc := client.Bucket("private-notes").Object(t.Key).NewWriter(ctx)
+			wc := client.Bucket(GCP_BUCKET_NAME).Object(t.Key).NewWriter(ctx)
 			wc.ContentType = "text/plain"
 			// wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
 			if _, err := wc.Write([]byte(t.SecureNote)); err != nil {
@@ -123,7 +133,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Println("Error: ", err)
 				}
-				rc, err := client.Bucket("private-notes").Object(key).NewReader(ctx)
+				rc, err := client.Bucket(GCP_BUCKET_NAME).Object(key).NewReader(ctx)
 				if err != nil {
 					fmt.Println("Error: ", err)
 					// http.Error(w, "Note does not exist", http.StatusNotFound)
@@ -142,7 +152,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				}
 				fmt.Println(string(slurp))
 
-				if err := client.Bucket("private-notes").Object(key).Delete(ctx); err != nil {
+				if err := client.Bucket(GCP_BUCKET_NAME).Object(key).Delete(ctx); err != nil {
 					fmt.Println("Error: ", err)
 				}
 

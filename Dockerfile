@@ -1,5 +1,10 @@
 FROM golang:1.16-alpine
 
+ENV ENVIRONMENT="docker"
+ENV GCP_PROJECT=""
+ENV GCP_REGION=""
+ENV GCP_BUCKET_NAME="private-notes"
+
 WORKDIR /private-notes
 
 COPY go.mod ./
