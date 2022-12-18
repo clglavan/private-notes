@@ -1,3 +1,6 @@
 *.json
 private_notes
 local
+.old-deployments
+.cloud-function-local
+.old-readme.md
