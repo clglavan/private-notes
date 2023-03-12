@@ -1,3 +1,28 @@
+{{define "pageCss" }}
+.input-text {
+  padding: 30px 30px 30px;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+}
+
+.tooltip:active {
+  filter: drop-shadow(0 0 0 steelblue);
+  transition: filter 0s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+{{end}}
 {{define "content"}}
     <h1>Thannk you for using private notes <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
     <h3>This note has been destroyed, below is the only copy.</h1>
@@ -6,8 +31,9 @@
         <p>This message is password protected <input type="text"   name="secretPassword" id="secretPassword" placeholder="Enter your password"></p>
         
     </div>
-    <div class="input-box">
-        <p id="plaintext" class="input-text"></p>
+    <div class="input-box tooltip">
+        <span class="tooltiptext">Click to copy to clipboard</span>
+        <p id="plaintext" class="input-text" onclick="copyDivToClipboard()"></p>
         <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
     </div> 
     <input type="button" class="hide" id="show" value="Show" onclick="showMessage()">
@@ -33,5 +59,14 @@ function showMessage(){
     const simpleCrypto = new SimpleCrypto(secretPassword.value)
     var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
     document.getElementById("plaintext").innerHTML = decipherText;
+}
+
+function copyDivToClipboard() {
+    var range = document.createRange();
+    range.selectNode(document.getElementById("plaintext"));
+    window.getSelection().removeAllRanges(); // clear current selection
+    window.getSelection().addRange(range); // to select text
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();// to deselect
 }
 {{end}}
