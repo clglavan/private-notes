@@ -4,3 +4,4 @@ local
 .old-deployments
 .cloud-function-local
 .old-readme.md
+.env
