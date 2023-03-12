@@ -6,10 +6,9 @@ Send private notes over the internet as one time links that destroy themselves a
 
 This repo wishes to provide an open-source alternative for managed solutions of similar usecase. Advantages include the contents of messages being saved on the organization's own cloud resources and future possibility for custom branding.
 
-# Getting started
+Demo: https://private-notes.glavan.tech/
 
-
-## Deployments
+# Deployments
 
 Deployment config, coming soon.
 

@@ -13,7 +13,9 @@ services:
       RECAPTCHA_SECRET: $RECAPTCHA_SECRET
     ports:
       - "8080:80"
+    restart: always
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+    restart: always
