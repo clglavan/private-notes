@@ -12,15 +12,18 @@
         <p>Optionally, enter a password for your note<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
         <input type="text" style="width: 100%" class="hide" name="secretPassword" id="secretPassword" placeholder="[Optional] Fill in a password, save it and send it securely to the other party">
         <input type="hidden" name="key" id="key"> 
-        <input type="submit" value="Encrypt & Send" onsubmit="e.preventDefault();">
+        <input type="submit" value="Encrypt & Send" onsubmit="e.preventDefault();" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
     </form>
 {{end}}
 
 {{define "pageJavascript"}}
+
 console.log(document.getElementById("private-notes"));
 var form = document.getElementById("private-notes");
 form.addEventListener("submit", function(evt) {
     evt.preventDefault();
+
+    grecaptcha.execute();
     
     secureNote = document.getElementById("secureNote").value;
     // window.history.back();
@@ -62,5 +65,9 @@ function showPassword() {
     password.required = false;
   }
 
+}
+
+function startRecaptcha(token) {
+    document.getElementById("private-notes").dispatchEvent(new Event('submit', {}));
 }
 {{end}}

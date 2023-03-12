@@ -19,6 +19,7 @@ div {text-align: center;} */
     box-shadow: 3px 3px 3px #ccc;   
     padding: 60px 30px 30px;
     border: black 1px solid;
+    border-radius: 15px;
 }
 .input-box textarea{
     max-width:100%;
@@ -33,6 +34,7 @@ input[type=button],input[type=text], input[type=submit], input[type=reset] {
     cursor: pointer;
     box-shadow: 3px 3px 3px #ccc;   
     border: black 1px solid;
+    border-radius: 5px;
 }
 .description {
     /* line-height: 1px; */

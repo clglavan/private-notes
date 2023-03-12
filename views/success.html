@@ -1,10 +1,52 @@
+{{define "pageCss" }}
+.input-text {
+  padding: 30px 30px 30px;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 150px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+}
+
+.tooltip:active {
+  filter: drop-shadow(0 0 0 steelblue);
+  transition: filter 0s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+{{end}}
 {{define "content"}}
 <h1>Thannk you for using private notes <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
 <h3>This note will self-destruct after it will be read.</h1>
 
-<div class="input-box">
-    <p class="input-text">{{.SecretUrl}}</p>
+<div class="input-box tooltip">
+    <span class="tooltiptext">Click to copy to clipboard</span>
+    <p class="input-text" id="secretURL" onclick="copyDivToClipboard()"></p>
     <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
 </div> 
 <!-- <button type="button" value="Copy to clipboard" onclick="copyToClipboard()">Copy to clipboard</button> -->
+{{end}}
+
+{{define "pageJavascript"}}
+var paragraph = document.getElementById("secretURL");
+var text = document.createTextNode(window.location.href+{{.SecretUrl}});
+
+paragraph.appendChild(text);
+
+function copyDivToClipboard() {
+    var range = document.createRange();
+    range.selectNode(document.getElementById("secretURL"));
+    window.getSelection().removeAllRanges(); // clear current selection
+    window.getSelection().addRange(range); // to select text
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();// to deselect
+}
 {{end}}
