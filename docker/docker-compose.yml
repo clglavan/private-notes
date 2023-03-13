@@ -6,11 +6,6 @@ services:
       dockerfile: docker/Dockerfile
     env_file:
       - .env
-    environment:
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      DEFAULT_EXPIRATION: 3600
-      RECAPTCHA_SECRET: $RECAPTCHA_SECRET
     ports:
       - "8080:80"
     restart: always
