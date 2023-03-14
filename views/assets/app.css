@@ -50,21 +50,21 @@ input[type=button],input[type=text], input[type=submit], input[type=reset] {
 }
 
 @media screen and (max-width : 1000px) {
-    html,body {
-        font-size: 180%;
+    body {
+        font-size: 200%;
     }
-    input[type=submit] {
+    /* input[type=submit] {
         width: 400px;
         height: 100px;
         font-size: 75%;
-    }
+    } */
     .input-text {
         width: 90%;
-    }
-    #secureNote {
+    } 
+    /* #secureNote {
         height: 500px;
-    }
-    #secretPassword {
+    } */
+    /* #secretPassword {
         width: 70%!important;
         height: 1%;
     }
@@ -74,6 +74,6 @@ input[type=button],input[type=text], input[type=submit], input[type=reset] {
     input[type="checkbox" i] {
         width: 50px;
         height: 50px;
-    }
+    } */
 }
 {{end}}
