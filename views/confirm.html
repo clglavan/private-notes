@@ -1,7 +1,6 @@
 {{define "content"}}
     <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
         <h3>Do you want to decrypt this message now? It's contents will be lost forever <i class="fa fa-trash" aria-hidden="true"></i></h3>
-        <p class="description">( Open-source, learn more at <i class="fa fa-github"> </i><a href="https://github.com/clglavan/private-notes" target="_blank">private-notes</a> )</p>
 
         <input type="hidden" name="key" id="key" value="{{ .Key }}"> 
         <input type="hidden" name="function" id="function" value="retrieve"> 
