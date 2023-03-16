@@ -44,6 +44,7 @@ input[type=button],input[type=text], input[type=submit], input[type=reset] {
     border-radius: 5px;
 }
 .description {
+    margin-left: 10px;
     position: fixed;
     bottom: 0;
     left: 0;
