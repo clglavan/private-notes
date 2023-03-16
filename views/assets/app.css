@@ -25,6 +25,12 @@ div {text-align: center;} */
 .input-box textarea{
     max-width:100%;
 }
+
+.input-box {
+    width: 100%;
+    word-wrap: break-word;
+}
+
 input[type=button],input[type=text], input[type=submit], input[type=reset] {
     background-color: white;
     /* border: none; */
@@ -38,8 +44,9 @@ input[type=button],input[type=text], input[type=submit], input[type=reset] {
     border-radius: 5px;
 }
 .description {
-    /* line-height: 1px; */
-    margin-top: 0%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
 }
 .hide {
     display: none;
