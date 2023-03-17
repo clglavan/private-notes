@@ -29,6 +29,7 @@ type SecretNote struct {
 type IndexPageData struct {
 	PostUrl                string
 	DEFAULT_EXPIRATION_INT int
+	ErrorBag               []string
 }
 type ConfirmPageData struct {
 	PostUrl string
@@ -63,6 +64,13 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	MAXIMUM_EXPIRATION := os.Getenv("MAXIMUM_EXPIRATION")
+	MAXIMUM_EXPIRATION_INT, err := strconv.Atoi(MAXIMUM_EXPIRATION)
+	if err != nil {
+		fmt.Println("Maximum expiration is not an integer")
+		return
+	}
+
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     REDIS_HOST + ":" + REDIS_PORT,
 		Password: REDIS_PASSWORD,
@@ -88,6 +96,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			data := IndexPageData{
 				PostUrl:                PUBLIC_URL,
 				DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+				ErrorBag:               nil,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -113,7 +122,21 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					fmt.Println("Default expiration is not an integer")
 					return
 				}
-				t.expiration = time.Second * time.Duration(intExpiration*60)
+
+				if intExpiration*60 > MAXIMUM_EXPIRATION_INT {
+					data := IndexPageData{
+						PostUrl:                PUBLIC_URL,
+						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60)},
+					}
+					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
+					tmpl.ParseGlob("views/assets/*")
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					tmpl.Execute(w, data)
+					return
+				} else {
+					t.expiration = time.Second * time.Duration(intExpiration*60)
+				}
 			} else {
 				t.expiration = time.Second * time.Duration(DEFAULT_EXPIRATION_INT)
 			}

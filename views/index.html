@@ -7,6 +7,9 @@
         <div class="input-box">
             <textarea id="secureNote" name="secureNote" class="input-text" rows="10" cols="70" placeholder="Notes will self-destruct after they are read..."></textarea>
         </div> 
+
+        
+        <div style="color:red"> {{range .ErrorBag}}{{.}}{{end}} </div>
         
         <div class="row-box">
         <p>Password protect your note<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
