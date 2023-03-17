@@ -8,8 +8,14 @@
             <textarea id="secureNote" name="secureNote" class="input-text" rows="10" cols="70" placeholder="Notes will self-destruct after they are read..."></textarea>
         </div> 
         
-        <p>Optionally, enter a password for your note<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
-        <input type="text" style="width: 100%" class="hide" name="secretPassword" id="secretPassword" placeholder="[Optional] Fill in a password, save it and send it securely to the other party">
+        <div class="row-box">
+        <p>Password protect your note<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
+        <input type="text" style="" class="hide" name="secretPassword" id="secretPassword" placeholder="enster your password">
+        </div>
+        <div class="row-box">
+        <p>Custom expiration time(minutes)(default:{{.DEFAULT_EXPIRATION_INT}})<input type="checkbox" id="expirationCheck" name="expirationCheck" onclick="showExpiration()"></p>
+        <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="">
+        </div>
         <input type="hidden" name="key" id="key"> 
         <input type="submit" value="Encrypt & Send" onsubmit="e.preventDefault();" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
     </form>
@@ -65,6 +71,18 @@ function showPassword() {
   }
 
 }
+
+function showExpiration() {
+    var expiration = document.getElementById("expirationTime");
+    expiration.classList.toggle("hide");
+    expiration.classList.toggle("show");
+    if (expiration.classList.contains("show")){
+        expiration.required = true;
+    }else{
+        expiration.required = false;
+    }
+  
+  }
 
 function startRecaptcha(token) {
     document.getElementById("private-notes").dispatchEvent(new Event('submit', {}));

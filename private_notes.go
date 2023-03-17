@@ -23,10 +23,12 @@ type SecretNote struct {
 	Key               string
 	SecureNote        string
 	RecaptchaResponse string
+	expiration        time.Duration
 }
 
 type IndexPageData struct {
-	PostUrl string
+	PostUrl                string
+	DEFAULT_EXPIRATION_INT int
 }
 type ConfirmPageData struct {
 	PostUrl string
@@ -84,7 +86,8 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			data := IndexPageData{
-				PostUrl: PUBLIC_URL,
+				PostUrl:                PUBLIC_URL,
+				DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -103,6 +106,18 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			t.SecureNote = r.FormValue("secureNote")
 			t.RecaptchaResponse = r.FormValue("g-recaptcha-response")
 
+			if r.FormValue("expirationTime") != "" {
+
+				intExpiration, err := strconv.Atoi(r.FormValue("expirationTime"))
+				if err != nil {
+					fmt.Println("Default expiration is not an integer")
+					return
+				}
+				t.expiration = time.Second * time.Duration(intExpiration*60)
+			} else {
+				t.expiration = time.Second * time.Duration(DEFAULT_EXPIRATION_INT)
+			}
+
 			// Check and verify the recaptcha response token.
 			if err := CheckRecaptcha(RECAPTCHA_SECRET, t.RecaptchaResponse); err != nil {
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -117,7 +132,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 
 			ctx := context.Background()
 
-			err := rdb.Set(ctx, t.Key, t.SecureNote, time.Second*time.Duration(DEFAULT_EXPIRATION_INT)).Err()
+			err := rdb.Set(ctx, t.Key, t.SecureNote, t.expiration).Err()
 			if err != nil {
 				panic(err)
 			}

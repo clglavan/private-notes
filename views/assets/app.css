@@ -15,6 +15,10 @@ div {text-align: center;} */
     height: 100%;
     /* border: 3px solid green;  */
 }
+.row-box {
+    display: flex; 
+    flex-direction: row;
+}
 .input-text {
     background: #fff;
     box-shadow: 3px 3px 3px #ccc;   
@@ -31,7 +35,7 @@ div {text-align: center;} */
     word-wrap: break-word;
 }
 
-input[type=button],input[type=text], input[type=submit], input[type=reset] {
+input[type=button],input[type=text],input[type=number], input[type=submit], input[type=reset] {
     background-color: white;
     /* border: none; */
     color: black;
