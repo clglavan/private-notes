@@ -16,7 +16,7 @@
         <input type="text" style="" class="hide" name="secretPassword" id="secretPassword" placeholder="enster your password">
         </div>
         <div class="row-box">
-        <p>Custom expiration time(minutes)(default:{{.DEFAULT_EXPIRATION_INT}})<input type="checkbox" id="expirationCheck" name="expirationCheck" onclick="showExpiration()"></p>
+        <p>Custom expiration time,1-{{.MAXIMUM_EXPIRATION_INT}},default {{.DEFAULT_EXPIRATION_INT}} min<input type="checkbox" id="expirationCheck" name="expirationCheck" onclick="showExpiration()"></p>
         <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="">
         </div>
         <input type="hidden" name="key" id="key"> 

@@ -29,6 +29,7 @@ type SecretNote struct {
 type IndexPageData struct {
 	PostUrl                string
 	DEFAULT_EXPIRATION_INT int
+	MAXIMUM_EXPIRATION_INT int
 	ErrorBag               []string
 }
 type ConfirmPageData struct {
@@ -96,6 +97,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			data := IndexPageData{
 				PostUrl:                PUBLIC_URL,
 				DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+				MAXIMUM_EXPIRATION_INT: MAXIMUM_EXPIRATION_INT / 60,
 				ErrorBag:               nil,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -127,7 +129,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					data := IndexPageData{
 						PostUrl:                PUBLIC_URL,
 						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
-						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60)},
+						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60) + " minutes"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 					tmpl.ParseGlob("views/assets/*")
