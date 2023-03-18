@@ -9,7 +9,7 @@ services:
     ports:
       - "8080:80"
     restart: always
-    volumes: #useful for local css
+    volumes: 
       - ../views/:/private-notes/views/
   redis:
     image: "redis:alpine"

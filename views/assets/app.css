@@ -4,16 +4,12 @@ html, body {
     font-family: monospace;
     overflow: hidden;
 }
-/* h1 {text-align: center;}
-p {text-align: center;}
-div {text-align: center;} */
 .center {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     height: 100%;
-    /* border: 3px solid green;  */
 }
 .row-box {
     display: flex; 
@@ -61,6 +57,11 @@ input[type=button],input[type=text],input[type=number], input[type=submit], inpu
     display: block;
 }
 
+.input-text:focus,input[type="text"]:focus,input[type="number"]:focus {
+    outline: none !important;
+    border:1px solid black;
+    box-shadow: 6px 6px 6px #ccc;
+}
 @media screen and (max-width : 1000px) {
     body {
         font-size: 200%;
