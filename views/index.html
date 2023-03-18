@@ -1,7 +1,14 @@
 {{define "content"}}
+    
     <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
         <input type="hidden" name="function" id="function" value="create"> 
+
+        {{if .CUSTOM_LOGO}}
+        <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="250" height="250"></img>
+        {{end}}
         <h1>Private notes <i class="fa fa-lock" aria-hidden="true"></i></h1>
+
+
         <h3>Send self-destructing private notes securely</h3>
 
         <div class="input-box">
