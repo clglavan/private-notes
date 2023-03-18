@@ -23,6 +23,7 @@ type SecretNote struct {
 	Key               string
 	SecureNote        string
 	RecaptchaResponse string
+	CUSTOM_LOGO       string
 	expiration        time.Duration
 }
 
@@ -31,14 +32,20 @@ type IndexPageData struct {
 	DEFAULT_EXPIRATION_INT int
 	MAXIMUM_EXPIRATION_INT int
 	ErrorBag               []string
+	CUSTOM_LOGO            string
 }
 type ConfirmPageData struct {
-	PostUrl string
-	Key     string
+	PostUrl     string
+	Key         string
+	CUSTOM_LOGO string
 }
 
+type ErrotPageData struct {
+	CUSTOM_LOGO string
+}
 type SuccessPageData struct {
-	SecretUrl string
+	SecretUrl   string
+	CUSTOM_LOGO string
 }
 
 type SiteVerifyResponse struct {
@@ -59,6 +66,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 	DEFAULT_EXPIRATION := os.Getenv("DEFAULT_EXPIRATION")
 	DEFAULT_EXPIRATION_INT, err := strconv.Atoi(DEFAULT_EXPIRATION)
 	RECAPTCHA_SECRET := os.Getenv("RECAPTCHA_SECRET")
+	CUSTOM_LOGO := os.Getenv("CUSTOM_LOGO")
 
 	if err != nil {
 		fmt.Println("Default expiration is not an integer")
@@ -85,8 +93,9 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 		key := r.URL.Query().Get("key")
 		if key != "" {
 			data := ConfirmPageData{
-				PostUrl: PUBLIC_URL,
-				Key:     key,
+				PostUrl:     PUBLIC_URL,
+				CUSTOM_LOGO: CUSTOM_LOGO,
+				Key:         key,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/confirm.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -98,6 +107,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				PostUrl:                PUBLIC_URL,
 				DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
 				MAXIMUM_EXPIRATION_INT: MAXIMUM_EXPIRATION_INT / 60,
+				CUSTOM_LOGO:            CUSTOM_LOGO,
 				ErrorBag:               nil,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -129,6 +139,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					data := IndexPageData{
 						PostUrl:                PUBLIC_URL,
 						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+						CUSTOM_LOGO:            CUSTOM_LOGO,
 						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60) + " minutes"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -151,7 +162,8 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 
 			// ##################### Prepare the url
 			data := SuccessPageData{
-				SecretUrl: string(secretURL + t.Key),
+				SecretUrl:   string(secretURL + t.Key),
+				CUSTOM_LOGO: CUSTOM_LOGO,
 			}
 			// ##################### Save the cipherText to redis
 
@@ -176,16 +188,20 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				val, err := rdb.Get(ctx, key).Result()
 
 				if err != nil {
+					data := ErrotPageData{
+						CUSTOM_LOGO: CUSTOM_LOGO,
+					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
 					tmpl.ParseGlob("views/assets/*")
 					w.Header().Set("Content-Type", "text/html; charset=utf-8")
-					tmpl.Execute(w, "")
+					tmpl.Execute(w, data)
 					return
 				}
 
 				data := SecretNote{
-					Key:        key,
-					SecureNote: string(val),
+					Key:         key,
+					CUSTOM_LOGO: CUSTOM_LOGO,
+					SecureNote:  string(val),
 				}
 				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/result.html"))
 				tmpl.ParseGlob("views/assets/*")

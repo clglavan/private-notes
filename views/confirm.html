@@ -1,5 +1,8 @@
 {{define "content"}}
     <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
+        {{if .CUSTOM_LOGO}}
+        <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="250" height="250"></img>
+        {{end}}
         <h3>Do you want to decrypt this message now? It's contents will be lost forever <i class="fa fa-trash" aria-hidden="true"></i></h3>
 
         <input type="hidden" name="key" id="key" value="{{ .Key }}"> 

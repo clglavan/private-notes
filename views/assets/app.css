@@ -62,6 +62,11 @@ input[type=button],input[type=text],input[type=number], input[type=submit], inpu
     border:1px solid black;
     box-shadow: 6px 6px 6px #ccc;
 }
+
+.logo {
+    
+}
+
 @media screen and (max-width : 1000px) {
     body {
         font-size: 200%;
