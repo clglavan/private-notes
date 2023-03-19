@@ -27,8 +27,9 @@
 }
 {{end}}
 {{define "content"}}
+    <div class="center">
     {{if .CUSTOM_LOGO}}
-    <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="250" height="250"></img>
+    <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="200" height="200"></img>
     {{end}}
     <h1>Thannk you for using <a href="/">private notes</a> <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
     <h3>This note has been destroyed, below is the only copy.</h1>
@@ -39,9 +40,10 @@
     </div>
     <div class="input-box tooltip">
         <span class="tooltiptext">Click to copy to clipboard</span>
-        <p id="plaintext" class="input-text" onclick="copyDivToClipboard()"></p>
+        <textarea id="plaintext" onclick="copyDivToClipboard()" class="input-text" rows="10" cols="70" ></textarea>
     </div> 
     <input type="button" class="hide" id="show" value="Show" onclick="showMessage()">
+</div>
 {{end}}
 
 {{define "pageJavascript"}}
