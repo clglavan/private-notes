@@ -25,6 +25,7 @@ type SecretNote struct {
 	RecaptchaResponse string
 	CUSTOM_LOGO       string
 	expiration        time.Duration
+	Lang              LangData
 }
 
 type IndexPageData struct {
@@ -33,19 +34,23 @@ type IndexPageData struct {
 	MAXIMUM_EXPIRATION_INT int
 	ErrorBag               []string
 	CUSTOM_LOGO            string
+	Lang                   LangData
 }
 type ConfirmPageData struct {
 	PostUrl     string
 	Key         string
 	CUSTOM_LOGO string
+	Lang        LangData
 }
 
 type ErrotPageData struct {
 	CUSTOM_LOGO string
+	Lang        LangData
 }
 type SuccessPageData struct {
 	SecretUrl   string
 	CUSTOM_LOGO string
+	Lang        LangData
 }
 
 type SiteVerifyResponse struct {
@@ -54,12 +59,65 @@ type SiteVerifyResponse struct {
 	Hostname    string    `json:"hostname"`
 }
 
+type LangData struct {
+	INDEX_TITLE                       string
+	INDEX_SUBTITLE                    string
+	INDEX_NOTE_PLACEHOLDER            string
+	INDEX_PASSWORD                    string
+	INDEX_PASSWORD_PLACEHOLDER        string
+	INDEX_EXPIRATION                  string
+	INDEX_SEND_BUTTON                 string
+	SUCCESS_TITLE                     string
+	SUCCESS_SUBTITLE                  string
+	SUCCESS_TOOLTIP                   string
+	CONFIRM_SUBTITLE                  string
+	CONFIRM_SHOW_BUTTON               string
+	RESULT_TITLE                      string
+	RESULT_SUBTITLE                   string
+	RESULT_PASSWORD                   string
+	RESULT_PASSWORD_PLACEHOLDER       string
+	RESULT_TOOLTIP                    string
+	ERROR_TITLE                       string
+	ERROR_SUBTITLE                    string
+	LANG_ERRORBAG_EMPTY               string
+	LANG_ERRORBAG_PASSWORD_REQUIRED   string
+	LANG_ERRORBAG_EXPIRATION_REQUIRED string
+	LANG_ERRORBAG_NOTE_TOO_LONG       string
+	LANG_ERRORBAG_EXPIRATION_TOO_LONG string
+}
+
 const siteVerifyURL = "https://www.google.com/recaptcha/api/siteverify"
 
 func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 
-	PUBLIC_URL := os.Getenv("PUBLIC_URL")
+	lang := LangData{
+		INDEX_TITLE:                       os.Getenv("LANG_INDEX_TITLE"),
+		INDEX_SUBTITLE:                    os.Getenv("LANG_INDEX_SUBTITLE"),
+		INDEX_NOTE_PLACEHOLDER:            os.Getenv("LANG_INDEX_NOTE_PLACEHOLDER"),
+		INDEX_PASSWORD:                    os.Getenv("LANG_INDEX_PASSWORD"),
+		INDEX_PASSWORD_PLACEHOLDER:        os.Getenv("LANG_INDEX_PASSWORD_PLACEHOLDER"),
+		INDEX_EXPIRATION:                  os.Getenv("LANG_INDEX_EXPIRATION"),
+		INDEX_SEND_BUTTON:                 os.Getenv("LANG_INDEX_SEND_BUTTON"),
+		SUCCESS_TITLE:                     os.Getenv("LANG_SUCCESS_TITLE"),
+		SUCCESS_SUBTITLE:                  os.Getenv("LANG_SUCCESS_SUBTITLE"),
+		SUCCESS_TOOLTIP:                   os.Getenv("LANG_SUCCESS_TOOLTIP"),
+		CONFIRM_SUBTITLE:                  os.Getenv("LANG_CONFIRM_SUBTITLE"),
+		CONFIRM_SHOW_BUTTON:               os.Getenv("LANG_CONFIRM_SHOW_BUTTON"),
+		RESULT_TITLE:                      os.Getenv("LANG_RESULT_TITLE"),
+		RESULT_SUBTITLE:                   os.Getenv("LANG_RESULT_SUBTITLE"),
+		RESULT_PASSWORD:                   os.Getenv("LANG_RESULT_PASSWORD"),
+		RESULT_PASSWORD_PLACEHOLDER:       os.Getenv("LANG_RESULT_PASSWORD_PLACEHOLDER"),
+		RESULT_TOOLTIP:                    os.Getenv("LANG_RESULT_TOOLTIP"),
+		ERROR_TITLE:                       os.Getenv("LANG_ERROR_TITLE"),
+		ERROR_SUBTITLE:                    os.Getenv("LANG_ERROR_SUBTITLE"),
+		LANG_ERRORBAG_EMPTY:               os.Getenv("LANG_ERRORBAG_EMPTY"),
+		LANG_ERRORBAG_PASSWORD_REQUIRED:   os.Getenv("LANG_ERRORBAG_PASSWORD_REQUIRED"),
+		LANG_ERRORBAG_EXPIRATION_REQUIRED: os.Getenv("LANG_ERRORBAG_EXPIRATION_REQUIRED"),
+		LANG_ERRORBAG_NOTE_TOO_LONG:       os.Getenv("LANG_ERRORBAG_NOTE_TOO_LONG"),
+		LANG_ERRORBAG_EXPIRATION_TOO_LONG: os.Getenv("LANG_ERRORBAG_EXPIRATION_TOO_LONG"),
+	}
 
+	PUBLIC_URL := os.Getenv("PUBLIC_URL")
 	REDIS_HOST := os.Getenv("REDIS_HOST")
 	REDIS_PORT := os.Getenv("REDIS_PORT")
 	REDIS_PASSWORD := os.Getenv("REDIS_PASSWORD")
@@ -96,6 +154,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				PostUrl:     PUBLIC_URL,
 				CUSTOM_LOGO: CUSTOM_LOGO,
 				Key:         key,
+				Lang:        lang,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/confirm.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -109,6 +168,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				MAXIMUM_EXPIRATION_INT: MAXIMUM_EXPIRATION_INT / 60,
 				CUSTOM_LOGO:            CUSTOM_LOGO,
 				ErrorBag:               nil,
+				Lang:                   lang,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -140,6 +200,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						PostUrl:                PUBLIC_URL,
 						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
 						CUSTOM_LOGO:            CUSTOM_LOGO,
+						Lang:                   lang,
 						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60) + " minutes"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -164,6 +225,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			data := SuccessPageData{
 				SecretUrl:   string(secretURL + t.Key),
 				CUSTOM_LOGO: CUSTOM_LOGO,
+				Lang:        lang,
 			}
 			// ##################### Save the cipherText to redis
 
@@ -190,6 +252,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					data := ErrotPageData{
 						CUSTOM_LOGO: CUSTOM_LOGO,
+						Lang:        lang,
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
 					tmpl.ParseGlob("views/assets/*")
@@ -202,6 +265,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					Key:         key,
 					CUSTOM_LOGO: CUSTOM_LOGO,
 					SecureNote:  string(val),
+					Lang:        lang,
 				}
 				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/result.html"))
 				tmpl.ParseGlob("views/assets/*")
