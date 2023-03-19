@@ -27,7 +27,7 @@
         <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="">
         </div>
         <input type="hidden" name="key" id="key"> 
-        <input type="submit" value="Encrypt & Send"  onsubmit="e.preventDefault();" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
+        <input type="submit" value="Encrypt & Send" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
     </form>
 {{end}}
 
@@ -36,15 +36,13 @@
 var form = document.getElementById("private-notes");
 form.addEventListener("submit", function(evt) {
     evt.preventDefault();
-// function sendForm() {
+
     var form = document.getElementById("private-notes");
 
     if(validateForm()) {
         grecaptcha.execute();
     
         secureNote = document.getElementById("secureNote").value;
-        // window.history.back();
-        // console.log(secureNote);
         
         var passwordCheck = document.getElementById("passwordCheck");
     
@@ -68,16 +66,16 @@ form.addEventListener("submit", function(evt) {
         }
         
         document.getElementById("secureNote").value = cipherText;
-        // form.submit(); 
         evt.currentTarget.submit();
+    } else {
+        grecaptcha.reset();
     }
+
     
 }, true);
 
 function startRecaptcha(token) {
-    // document.getElementById("demo-form").submit();
     document.getElementById("private-notes").dispatchEvent(new Event('submit', {}));
-    sendForm();
 }
 
 function validateForm() {
