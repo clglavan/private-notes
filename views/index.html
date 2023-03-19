@@ -27,15 +27,16 @@
         <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="">
         </div>
         <input type="hidden" name="key" id="key"> 
-        <input type="submit" value="Encrypt & Send" onclick="sendForm()" onsubmit="e.preventDefault();" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="sendForm">
+        <input type="submit" value="Encrypt & Send"  onsubmit="e.preventDefault();" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
     </form>
 {{end}}
 
 {{define "pageJavascript"}}
 
-
-
-function sendForm() {
+var form = document.getElementById("private-notes");
+form.addEventListener("submit", function(evt) {
+    evt.preventDefault();
+// function sendForm() {
     var form = document.getElementById("private-notes");
 
     if(validateForm()) {
@@ -67,10 +68,16 @@ function sendForm() {
         }
         
         document.getElementById("secureNote").value = cipherText;
-        form.submit(); 
+        // form.submit(); 
+        evt.currentTarget.submit();
     }
+    
+}, true);
 
-
+function startRecaptcha(token) {
+    // document.getElementById("demo-form").submit();
+    document.getElementById("private-notes").dispatchEvent(new Event('submit', {}));
+    sendForm();
 }
 
 function validateForm() {
