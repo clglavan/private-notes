@@ -18,7 +18,7 @@ Run the docker-compose in the `docker` directory
 
 # Known bugs
 - [ ] if you open a password-protected note, trying to decrypt with a wrong password will not work ( as expected ) but will also trigger the note to be destroyed. Split destroy logic, trigger with ajax
-# Further improvements
+# Roadmap
 - [x] make decryption by choice, with "view note" button
 - [x] add custom password
 - [x] refactor html with layout
