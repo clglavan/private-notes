@@ -6,28 +6,28 @@
         {{if .CUSTOM_LOGO}}
         <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="200" height="200"></img>
         {{end}}
-        <h1>Private notes <i class="fa fa-lock" aria-hidden="true"></i></h1>
+        <h1>{{.Lang.INDEX_TITLE}} <i class="fa fa-lock" aria-hidden="true"></i></h1>
 
 
-        <h3>Send self-destructing private notes securely</h3>
+        <h3>{{.Lang.INDEX_SUBTITLE}}</h3>
 
         <div class="input-box">
-            <textarea required minlength="1" maxlength="10000" id="secureNote" name="secureNote" class="input-text" rows="10" cols="70" placeholder="Notes will self-destruct after they are read..."></textarea>
+            <textarea required minlength="1" maxlength="10000" id="secureNote" name="secureNote" class="input-text" rows="10" cols="70" placeholder="{{.Lang.INDEX_NOTE_PLACEHOLDER}}"></textarea>
         </div> 
 
         
         <div id="errors" style="color:red"> {{range .ErrorBag}}{{.}}{{end}} </div>
         
         <div class="row-box">
-        <p>Password protect your note<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
-        <input type="text" style="" class="hide" name="secretPassword" id="secretPassword" placeholder="enster your password">
+        <p>{{.Lang.INDEX_PASSWORD}}<input type="checkbox" id="passwordCheck" name="passwordCheck" onclick="showPassword()"></p>
+        <input type="text" style="" class="hide" name="secretPassword" id="secretPassword" placeholder="{{.Lang.INDEX_PASSWORD_PLACEHOLDER}}">
         </div>
         <div class="row-box">
-        <p>Custom expiration time,1-{{.MAXIMUM_EXPIRATION_INT}},default {{.DEFAULT_EXPIRATION_INT}} min<input type="checkbox" id="expirationCheck" name="expirationCheck" onclick="showExpiration()"></p>
+        <p>{{.Lang.INDEX_EXPIRATION}}<input type="checkbox" id="expirationCheck" name="expirationCheck" onclick="showExpiration()"></p>
         <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="">
         </div>
         <input type="hidden" name="key" id="key"> 
-        <input type="submit" value="Encrypt & Send" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
+        <input type="submit" value="{{.Lang.INDEX_SEND_BUTTON}}" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
     </form>
 {{end}}
 
@@ -88,7 +88,7 @@ function validateForm() {
         if(!document.getElementById("secureNoteValueMissing")){
             var error = document.createElement("p");
             error.setAttribute("id","secureNoteValueMissing");
-            error.innerHTML = "You can't send an empty note";
+            error.innerHTML = "{{.Lang.LANG_ERRORBAG_EMPTY}}";
             errors.appendChild(error);
         }
         valid = false;
@@ -100,7 +100,7 @@ function validateForm() {
         if(!document.getElementById("secureNoteTooLong")){
             var error = document.createElement("p");
             error.setAttribute("id","secureNoteTooLong");
-            error.innerHTML = "This note is too long";
+            error.innerHTML = "{{.Lang.LANG_ERRORBAG_NOTE_TOO_LONG}}";
             errors.appendChild(error);
         }
         valid = false;
@@ -112,7 +112,7 @@ function validateForm() {
         if(!document.getElementById("secretPasswordValueMissing")){
             var error = document.createElement("p");
             error.setAttribute("id","secretPasswordValueMissing");
-            error.innerHTML = "Secret password checked but not provided";
+            error.innerHTML = "{{.Lang.LANG_ERRORBAG_PASSWORD_REQUIRED}}";
             errors.appendChild(error);
         }
         valid = false;
@@ -124,7 +124,7 @@ function validateForm() {
         if(!document.getElementById("expirationTimeValueMissing")){
             var error = document.createElement("p");
             error.setAttribute("id","expirationTimeValueMissing");
-            error.innerHTML = "Expiration time checked but not provided";
+            error.innerHTML = "{{.Lang.LANG_ERRORBAG_EXPIRATION_REQUIRED}}";
             errors.appendChild(error);
         }
         valid = false;

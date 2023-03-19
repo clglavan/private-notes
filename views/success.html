@@ -31,11 +31,11 @@
 {{if .CUSTOM_LOGO}}
 <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="200" height="200"></img>
 {{end}}
-<h1>Thannk you for using <a href="/">private notes</a> <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
-<h3>This note will self-destruct after it will be read. Click on it to copy to clipboard and send this link to the other party.</h1>
+<h1> <a href="/">{{.Lang.SUCCESS_TITLE}}</a> <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
+<h3>{{.Lang.SUCCESS_SUBTITLE}}</h1>
 
 <div class="input-box tooltip">
-    <span class="tooltiptext">Click to copy to clipboard</span>
+    <span class="tooltiptext">{{.Lang.SUCCESS_TOOLTIP}}</span>
     <p class="input-text" id="secretURL" onclick="copyDivToClipboard()"></p>
 </div> 
 {{end}}
