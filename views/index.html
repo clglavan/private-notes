@@ -24,7 +24,7 @@
         </div>
         <div class="row-box">
         <p>{{.Lang.INDEX_EXPIRATION}}<input type="checkbox" id="expirationCheck" name="expirationCheck" onclick="showExpiration()"></p>
-        <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="">
+        <input type="number" style="max-width: 50px;" class="hide" name="expirationTime" id="expirationTime" placeholder="{{.DEFAULT_EXPIRATION_INT}}">
         </div>
         <input type="hidden" name="key" id="key"> 
         <input type="submit" value="{{.Lang.INDEX_SEND_BUTTON}}" class="g-recaptcha" data-sitekey="6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL" data-callback="startRecaptcha">
@@ -133,6 +133,18 @@ function validateForm() {
         var e=document.getElementById("expirationTimeValueMissing");
         if(e!==null) e.remove();
     }
+    if (expirationTime.value > {{.MAXIMUM_EXPIRATION_INT}}){
+        if(!document.getElementById("expirationTimeValueTooLong")){
+            var error = document.createElement("p");
+            error.setAttribute("id","expirationTimeValueTooLong");
+            error.innerHTML = "{{.Lang.LANG_ERRORBAG_EXPIRATION_TOO_LONG}}";
+            errors.appendChild(error);
+        }
+        valid = false;
+    } else {
+        var e=document.getElementById("expirationTimeValueTooLong");
+        if(e!==null) e.remove();
+    }
     return valid;
 }
 
@@ -144,6 +156,7 @@ function showPassword() {
     password.required = true;
   }else{
     password.required = false;
+    password.value = "";
   }
 
 }
@@ -155,7 +168,9 @@ function showExpiration() {
     if (expiration.classList.contains("show")){
         expiration.required = true;
     }else{
+        console.log('here');
         expiration.required = false;
+        expiration.value = "";
     }
   
   }
