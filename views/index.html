@@ -69,13 +69,14 @@ form.addEventListener("submit", function(evt) {
         evt.currentTarget.submit();
     } else {
         grecaptcha.reset();
+        return false;
     }
 
     
 }, true);
 
 function startRecaptcha(token) {
-    document.getElementById("private-notes").dispatchEvent(new Event('submit', {}));
+    document.getElementById("private-notes").dispatchEvent(new Event('submit', {cancelable: true}));
 }
 
 function validateForm() {
