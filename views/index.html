@@ -1,6 +1,6 @@
 {{define "content"}}
     
-    <form action="{{.PostUrl}}" id="private-notes" class="center" method="post">
+    <form action="{{.PostUrl}}" id="private-notes" class="center" autocomplete="off" method="post">
         <input type="hidden" name="function" id="function" value="create"> 
 
         {{if .CUSTOM_LOGO}}
