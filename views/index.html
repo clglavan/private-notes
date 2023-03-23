@@ -12,9 +12,8 @@
         <h3>{{.Lang.INDEX_SUBTITLE}}</h3>
 
         <div class="input-box">
-            <textarea required minlength="1" maxlength="10000" id="secureNote" name="secureNote" class="input-text" rows="10" cols="70" placeholder="{{.Lang.INDEX_NOTE_PLACEHOLDER}}"></textarea>
+            <textarea required minlength="1" maxlength="{{ .NOTE_MAX_LENGTH_CLIENT }}" id="secureNote" name="secureNote" class="input-text" rows="10" cols="70" placeholder="{{.Lang.INDEX_NOTE_PLACEHOLDER}}"></textarea>
         </div> 
-
         
         <div id="errors" style="color:red"> {{range .ErrorBag}}{{.}}{{end}} </div>
         

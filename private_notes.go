@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"unicode/utf8"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -37,6 +38,7 @@ type IndexPageData struct {
 	CUSTOM_LOGO            string
 	Lang                   LangData
 	GA_TAG                 string
+	NOTE_MAX_LENGTH_CLIENT string
 }
 type ConfirmPageData struct {
 	PostUrl     string
@@ -127,11 +129,22 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 	REDIS_PORT := os.Getenv("REDIS_PORT")
 	REDIS_PASSWORD := os.Getenv("REDIS_PASSWORD")
 	DEFAULT_EXPIRATION := os.Getenv("DEFAULT_EXPIRATION")
-	DEFAULT_EXPIRATION_INT, err := strconv.Atoi(DEFAULT_EXPIRATION)
+
 	RECAPTCHA_SECRET := os.Getenv("RECAPTCHA_SECRET")
 	CUSTOM_LOGO := os.Getenv("CUSTOM_LOGO")
 	GA_TAG := os.Getenv("GA_TAG")
 
+	NOTE_MAX_LENGTH_CLIENT := os.Getenv("NOTE_MAX_LENGTH_CLIENT")
+
+	NOTE_MAX_LENGTH_SERVER := os.Getenv("NOTE_MAX_LENGTH_SERVER")
+	NOTE_MAX_LENGTH_SERVER_INT, err := strconv.Atoi(NOTE_MAX_LENGTH_SERVER)
+
+	if err != nil {
+		fmt.Println("Default expiration is not an integer")
+		return
+	}
+
+	DEFAULT_EXPIRATION_INT, err := strconv.Atoi(DEFAULT_EXPIRATION)
 	if err != nil {
 		fmt.Println("Default expiration is not an integer")
 		return
@@ -177,6 +190,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				ErrorBag:               nil,
 				Lang:                   lang,
 				GA_TAG:                 GA_TAG,
+				NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -195,6 +209,23 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			t.SecureNote = r.FormValue("secureNote")
 			t.RecaptchaResponse = r.FormValue("g-recaptcha-response")
 
+			if utf8.RuneCountInString(t.SecureNote) > NOTE_MAX_LENGTH_SERVER_INT {
+				data := IndexPageData{
+					PostUrl:                PUBLIC_URL,
+					DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+					CUSTOM_LOGO:            CUSTOM_LOGO,
+					Lang:                   lang,
+					GA_TAG:                 GA_TAG,
+					NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
+					ErrorBag:               []string{"Failed! The note is too long"},
+				}
+				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
+				tmpl.ParseGlob("views/assets/*")
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				tmpl.Execute(w, data)
+				return
+			}
+
 			if r.FormValue("expirationTime") != "" {
 
 				intExpiration, err := strconv.Atoi(r.FormValue("expirationTime"))
@@ -205,6 +236,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						CUSTOM_LOGO:            CUSTOM_LOGO,
 						Lang:                   lang,
 						GA_TAG:                 GA_TAG,
+						NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 						ErrorBag:               []string{"Failed! Expiration time is not an integer"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -221,6 +253,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						CUSTOM_LOGO:            CUSTOM_LOGO,
 						Lang:                   lang,
 						GA_TAG:                 GA_TAG,
+						NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 						ErrorBag:               []string{"Failed! Expiration time can't be negative"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -237,6 +270,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						CUSTOM_LOGO:            CUSTOM_LOGO,
 						Lang:                   lang,
 						GA_TAG:                 GA_TAG,
+						NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60) + " minutes"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
