@@ -26,6 +26,7 @@ type SecretNote struct {
 	CUSTOM_LOGO       string
 	expiration        time.Duration
 	Lang              LangData
+	GA_TAG            string
 }
 
 type IndexPageData struct {
@@ -35,22 +36,26 @@ type IndexPageData struct {
 	ErrorBag               []string
 	CUSTOM_LOGO            string
 	Lang                   LangData
+	GA_TAG                 string
 }
 type ConfirmPageData struct {
 	PostUrl     string
 	Key         string
 	CUSTOM_LOGO string
 	Lang        LangData
+	GA_TAG      string
 }
 
 type ErrotPageData struct {
 	CUSTOM_LOGO string
 	Lang        LangData
+	GA_TAG      string
 }
 type SuccessPageData struct {
 	SecretUrl   string
 	CUSTOM_LOGO string
 	Lang        LangData
+	GA_TAG      string
 }
 
 type SiteVerifyResponse struct {
@@ -125,6 +130,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 	DEFAULT_EXPIRATION_INT, err := strconv.Atoi(DEFAULT_EXPIRATION)
 	RECAPTCHA_SECRET := os.Getenv("RECAPTCHA_SECRET")
 	CUSTOM_LOGO := os.Getenv("CUSTOM_LOGO")
+	GA_TAG := os.Getenv("GA_TAG")
 
 	if err != nil {
 		fmt.Println("Default expiration is not an integer")
@@ -155,6 +161,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				CUSTOM_LOGO: CUSTOM_LOGO,
 				Key:         key,
 				Lang:        lang,
+				GA_TAG:      GA_TAG,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/confirm.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -169,6 +176,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				CUSTOM_LOGO:            CUSTOM_LOGO,
 				ErrorBag:               nil,
 				Lang:                   lang,
+				GA_TAG:                 GA_TAG,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -196,6 +204,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
 						CUSTOM_LOGO:            CUSTOM_LOGO,
 						Lang:                   lang,
+						GA_TAG:                 GA_TAG,
 						ErrorBag:               []string{"Failed! Expiration time is not an integer"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -211,6 +220,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
 						CUSTOM_LOGO:            CUSTOM_LOGO,
 						Lang:                   lang,
+						GA_TAG:                 GA_TAG,
 						ErrorBag:               []string{"Failed! Expiration time can't be negative"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -226,6 +236,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
 						CUSTOM_LOGO:            CUSTOM_LOGO,
 						Lang:                   lang,
+						GA_TAG:                 GA_TAG,
 						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60) + " minutes"},
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
@@ -251,6 +262,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				SecretUrl:   string(secretURL + t.Key),
 				CUSTOM_LOGO: CUSTOM_LOGO,
 				Lang:        lang,
+				GA_TAG:      GA_TAG,
 			}
 			// ##################### Save the cipherText to redis
 
@@ -278,6 +290,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					data := ErrotPageData{
 						CUSTOM_LOGO: CUSTOM_LOGO,
 						Lang:        lang,
+						GA_TAG:      GA_TAG,
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
 					tmpl.ParseGlob("views/assets/*")
@@ -291,6 +304,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					CUSTOM_LOGO: CUSTOM_LOGO,
 					SecureNote:  string(val),
 					Lang:        lang,
+					GA_TAG:      GA_TAG,
 				}
 				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/result.html"))
 				tmpl.ParseGlob("views/assets/*")
