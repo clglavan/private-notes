@@ -191,7 +191,32 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 
 				intExpiration, err := strconv.Atoi(r.FormValue("expirationTime"))
 				if err != nil {
-					fmt.Println("Default expiration is not an integer")
+					data := IndexPageData{
+						PostUrl:                PUBLIC_URL,
+						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+						CUSTOM_LOGO:            CUSTOM_LOGO,
+						Lang:                   lang,
+						ErrorBag:               []string{"Failed! Expiration time is not an integer"},
+					}
+					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
+					tmpl.ParseGlob("views/assets/*")
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					tmpl.Execute(w, data)
+					return
+				}
+
+				if intExpiration*60 < 0 {
+					data := IndexPageData{
+						PostUrl:                PUBLIC_URL,
+						DEFAULT_EXPIRATION_INT: DEFAULT_EXPIRATION_INT / 60,
+						CUSTOM_LOGO:            CUSTOM_LOGO,
+						Lang:                   lang,
+						ErrorBag:               []string{"Failed! Expiration time can't be negative"},
+					}
+					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
+					tmpl.ParseGlob("views/assets/*")
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					tmpl.Execute(w, data)
 					return
 				}
 
