@@ -39,6 +39,7 @@ type IndexPageData struct {
 	Lang                   LangData
 	GA_TAG                 string
 	NOTE_MAX_LENGTH_CLIENT string
+	RECAPTCHA_KEY          string
 }
 type ConfirmPageData struct {
 	PostUrl     string
@@ -129,7 +130,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 	REDIS_PORT := os.Getenv("REDIS_PORT")
 	REDIS_PASSWORD := os.Getenv("REDIS_PASSWORD")
 	DEFAULT_EXPIRATION := os.Getenv("DEFAULT_EXPIRATION")
-
+	RECAPTCHA_KEY := os.Getenv("RECAPTCHA_KEY")
 	RECAPTCHA_SECRET := os.Getenv("RECAPTCHA_SECRET")
 	CUSTOM_LOGO := os.Getenv("CUSTOM_LOGO")
 	GA_TAG := os.Getenv("GA_TAG")
@@ -191,6 +192,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				Lang:                   lang,
 				GA_TAG:                 GA_TAG,
 				NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
+				RECAPTCHA_KEY: RECAPTCHA_KEY,
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
