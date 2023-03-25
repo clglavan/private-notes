@@ -28,6 +28,7 @@ type SecretNote struct {
 	expiration        time.Duration
 	Lang              LangData
 	GA_TAG            string
+	PageTitle         string
 }
 
 type IndexPageData struct {
@@ -40,6 +41,7 @@ type IndexPageData struct {
 	GA_TAG                 string
 	NOTE_MAX_LENGTH_CLIENT string
 	RECAPTCHA_KEY          string
+	PageTitle              string
 }
 type ConfirmPageData struct {
 	PostUrl     string
@@ -47,18 +49,21 @@ type ConfirmPageData struct {
 	CUSTOM_LOGO string
 	Lang        LangData
 	GA_TAG      string
+	PageTitle   string
 }
 
 type ErrotPageData struct {
 	CUSTOM_LOGO string
 	Lang        LangData
 	GA_TAG      string
+	PageTitle   string
 }
 type SuccessPageData struct {
 	SecretUrl   string
 	CUSTOM_LOGO string
 	Lang        LangData
 	GA_TAG      string
+	PageTitle   string
 }
 
 type SiteVerifyResponse struct {
@@ -176,6 +181,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				Key:         key,
 				Lang:        lang,
 				GA_TAG:      GA_TAG,
+				PageTitle:   "Confirm",
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/confirm.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -192,7 +198,8 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				Lang:                   lang,
 				GA_TAG:                 GA_TAG,
 				NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
-				RECAPTCHA_KEY: RECAPTCHA_KEY,
+				RECAPTCHA_KEY:          RECAPTCHA_KEY,
+				PageTitle:              "Create",
 			}
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 			tmpl.ParseGlob("views/assets/*")
@@ -220,6 +227,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					GA_TAG:                 GA_TAG,
 					NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 					ErrorBag:               []string{"Failed! The note is too long"},
+					PageTitle:              "Create",
 				}
 				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 				tmpl.ParseGlob("views/assets/*")
@@ -240,6 +248,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						GA_TAG:                 GA_TAG,
 						NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 						ErrorBag:               []string{"Failed! Expiration time is not an integer"},
+						PageTitle:              "Create",
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 					tmpl.ParseGlob("views/assets/*")
@@ -257,6 +266,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						GA_TAG:                 GA_TAG,
 						NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 						ErrorBag:               []string{"Failed! Expiration time can't be negative"},
+						PageTitle:              "Create",
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 					tmpl.ParseGlob("views/assets/*")
@@ -274,6 +284,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						GA_TAG:                 GA_TAG,
 						NOTE_MAX_LENGTH_CLIENT: NOTE_MAX_LENGTH_CLIENT,
 						ErrorBag:               []string{"Failed! The expiration amount exceeds the maximum of " + strconv.Itoa(MAXIMUM_EXPIRATION_INT/60) + " minutes"},
+						PageTitle:              "Create",
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/index.html"))
 					tmpl.ParseGlob("views/assets/*")
@@ -299,6 +310,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				CUSTOM_LOGO: CUSTOM_LOGO,
 				Lang:        lang,
 				GA_TAG:      GA_TAG,
+				PageTitle:   "Success",
 			}
 			// ##################### Save the cipherText to redis
 
@@ -327,6 +339,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 						CUSTOM_LOGO: CUSTOM_LOGO,
 						Lang:        lang,
 						GA_TAG:      GA_TAG,
+						PageTitle:   "Error",
 					}
 					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
 					tmpl.ParseGlob("views/assets/*")
@@ -341,6 +354,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					SecureNote:  string(val),
 					Lang:        lang,
 					GA_TAG:      GA_TAG,
+					PageTitle:   "Result",
 				}
 				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/result.html"))
 				tmpl.ParseGlob("views/assets/*")
