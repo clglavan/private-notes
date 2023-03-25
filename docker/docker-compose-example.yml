@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   web:
-    image: "clglavan/private-notes:latest"
+    image: "clglavan/private-notes:test"
     env_file:
       - .env
     ports:
