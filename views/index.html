@@ -36,8 +36,6 @@ var form = document.getElementById("private-notes");
 form.addEventListener("submit", function(evt) {
     evt.preventDefault();
 
-    var form = document.getElementById("private-notes");
-
     if(validateForm()) {
         grecaptcha.execute();
     

@@ -7,7 +7,21 @@
 
         <input type="hidden" name="key" id="key" value="{{ .Key }}"> 
         <input type="hidden" name="function" id="function" value="retrieve"> 
-        <input type="submit" value="{{.Lang.CONFIRM_SHOW_BUTTON}}">
+        <input type="submit" value="{{.Lang.CONFIRM_SHOW_BUTTON}}" class="g-recaptcha" data-sitekey="{{ .RECAPTCHA_KEY }}" data-callback="startRecaptcha">
         
     </form>
+{{end}}
+{{define "pageJavascript"}}
+
+var form = document.getElementById("private-notes");
+form.addEventListener("submit", function(evt) {
+    evt.preventDefault();
+    grecaptcha.execute();
+    evt.currentTarget.submit();
+});
+
+function startRecaptcha(token) {
+    document.getElementById("private-notes").dispatchEvent(new Event('submit', {cancelable: true}));
+}
+
 {{end}}

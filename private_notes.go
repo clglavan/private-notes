@@ -44,12 +44,13 @@ type IndexPageData struct {
 	PageTitle              string
 }
 type ConfirmPageData struct {
-	PostUrl     string
-	Key         string
-	CUSTOM_LOGO string
-	Lang        LangData
-	GA_TAG      string
-	PageTitle   string
+	PostUrl       string
+	Key           string
+	CUSTOM_LOGO   string
+	Lang          LangData
+	GA_TAG        string
+	PageTitle     string
+	RECAPTCHA_KEY string
 }
 
 type ErrotPageData struct {
@@ -176,13 +177,15 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 		key := r.URL.Query().Get("key")
 		if key != "" {
 			data := ConfirmPageData{
-				PostUrl:     PUBLIC_URL,
-				CUSTOM_LOGO: CUSTOM_LOGO,
-				Key:         key,
-				Lang:        lang,
-				GA_TAG:      GA_TAG,
-				PageTitle:   "Confirm",
+				PostUrl:       PUBLIC_URL,
+				CUSTOM_LOGO:   CUSTOM_LOGO,
+				Key:           key,
+				Lang:          lang,
+				GA_TAG:        GA_TAG,
+				RECAPTCHA_KEY: RECAPTCHA_KEY,
+				PageTitle:     "Confirm",
 			}
+
 			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/confirm.html"))
 			tmpl.ParseGlob("views/assets/*")
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -300,7 +303,17 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 
 			// Check and verify the recaptcha response token.
 			if err := CheckRecaptcha(RECAPTCHA_SECRET, t.RecaptchaResponse); err != nil {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
+				data := ErrotPageData{
+					CUSTOM_LOGO: CUSTOM_LOGO,
+					Lang:        lang,
+					GA_TAG:      GA_TAG,
+					PageTitle:   "Error",
+				}
+				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
+				tmpl.ParseGlob("views/assets/*")
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				tmpl.Execute(w, data)
 				return
 			}
 
@@ -330,6 +343,25 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 		case "retrieve":
 			key := r.FormValue("key")
 			if key != "" {
+
+				RecaptchaResponse := r.FormValue("g-recaptcha-response")
+
+				// Check and verify the recaptcha response token.
+				if err := CheckRecaptcha(RECAPTCHA_SECRET, RecaptchaResponse); err != nil {
+					lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
+					data := ErrotPageData{
+						CUSTOM_LOGO: CUSTOM_LOGO,
+						Lang:        lang,
+						GA_TAG:      GA_TAG,
+						PageTitle:   "Error",
+					}
+					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
+					tmpl.ParseGlob("views/assets/*")
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					tmpl.Execute(w, data)
+					return
+				}
+
 				ctx := context.Background()
 
 				val, err := rdb.Get(ctx, key).Result()
