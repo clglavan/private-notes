@@ -17,19 +17,26 @@ Use the `docker/docker-compose-example.yml` as an example to run it out of the b
 # recaptcha logic is mandatory, you have to generate a recatpcha key from google
 RECAPTCHA_KEY=
 RECAPTCHA_SECRET=
-# if you are using the default docker compose, leave them as they are, otherwise fill in your redis variables
+# if you are using the default docker compose, leave them as they are
+#   otherwise fill in your redis variables
 REDIS_HOST=redis
 REDIS_PORT=6379
 REDIS_PASSWORD=
-# the default expiration is how much a note should stay alive, if it hasn't been read and the user didn't set a custom expiration time
+# the default expiration is how much a note should stay alive
+#   if it hasn't been read and the user didn't set a custom expiration time
 DEFAULT_EXPIRATION=3600
-# the maxim expiration is how much the server should allow the user to input a custom expiration time
+# the maxim expiration is how much the server should allow the user
+#   to input a custom expiration time
 MAXIMUM_EXPIRATION=3600
-# add a custom logo, remember this application does not serve resources, this variable will only populate the href of the logo img, thus you must either provide an url for this logo, or serve it through a proxy in front of this application
+# add a custom logo, remember this application does not serve resources,
+#   this variable will only populate the href of the logo img,
+# thus you must either provide an url for this logo,
+#   or serve it through a proxy in front of this application
 CUSTOM_LOGO=http://
 # optionally add a Google Analytics id
 GA_TAG=G-XYG1D4F08D
-# how many characters should the server allow an encrypted note to be had, generally it should be > 1.5x NOTE_MAX_LENGTH_CLIENT
+# how many characters should the server allow an encrypted note to be had,
+#   generally it should be > 1.5x NOTE_MAX_LENGTH_CLIENT
 NOTE_MAX_LENGTH_SERVER=20000
 # how many characters should the javascript code allow the user to input
 NOTE_MAX_LENGTH_CLIENT=10000
