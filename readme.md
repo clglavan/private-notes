@@ -1,4 +1,5 @@
-# Private Notes - send self-distructing notes over the internet
+# Private Notes - send self-distructing notes over the internet ![End to end tests](https://github.com/clglavan/private-notes/actions/workflows/test.yml/badge.svg) ![Build](https://github.com/clglavan/private-notes/actions/workflows/docker-latest.yml/badge.svg)
+
 
 ![private_notes](private_notes.png)
 
