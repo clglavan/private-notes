@@ -47,8 +47,16 @@ func TestPrivateNotes(t *testing.T) {
 	t.Setenv("LANG_ERRORBAG_NOTE_TOO_LONG", "Secret note is too long")
 	t.Setenv("LANG_ERRORBAG_EXPIRATION_TOO_LONG", "Expiration time is too long")
 
+	testCreate(t)
+	testSuccess(t)
+	testConfirm(t)
+	testResult(t)
+	testWrongResult(t)
+}
+
+func testCreate(t *testing.T) {
 	// Validate the GET / response 1)
-	t.Log("1) Validate the GET / response")
+	t.Log("1) Validate the CREATE page")
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	w := httptest.NewRecorder()
 	PrivateNotes(w, req)
@@ -61,33 +69,32 @@ func TestPrivateNotes(t *testing.T) {
 	// 1.a Check for textarea
 	t.Log("1.a Checkin for the textarea for input")
 	if !strings.Contains(string(data), "<textarea id=\"secureNote\"") {
-		t.Errorf("1.Expected a textarea but wasn't found, got %v", string(data))
+		t.Errorf("1.a Expected a textarea but wasn't found, got %v", string(data))
 	}
 	// 1.b Check for button
 	t.Log("1.b Checking for the submit button")
 	if !strings.Contains(string(data), "<input type=\"submit\"") {
-		t.Errorf("Expected a submit button but wasn't found, got %v", string(data))
+		t.Errorf("1.b Expected a submit button but wasn't found, got %v", string(data))
 	}
+}
 
-	/* ============================================================================= */
-	// Validate the POST / response 2)
+func testSuccess(t *testing.T) {
+
+	t.Log("2) Validate the SUCCESS page with link")
 	formData := url.Values{}
 	formData.Set("function", "create")
 	formData.Add("secureNote", "468cdaed482145453bbbceb74629633951fb10303c15c55b66a367b54716aaa1xGlMEy3u/f2UzQpKtYANuw==45b517b96c60b8a13628eb51291c32856dfba3b5263e466e156b3cd3b5b70111")
 	formData.Add("secretPassword", "")
 	formData.Add("expirationTime", "")
 	formData.Add("key", "55a3932290cb72fbc28f5682b4da1e7e2c0c18223a28746ab6953a87b5013f8d")
-	formData.Add("key", "55a3932290cb72fbc28f5682b4da1e7e2c0c18223a28746ab6953a87b5013f8d")
 	formData.Add("g-recaptcha-response", "")
-
-	t.Log("2) Validate the POST / response")
-	req = httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(formData.Encode()))
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(formData.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;")
-	w = httptest.NewRecorder()
+	w := httptest.NewRecorder()
 	PrivateNotes(w, req)
-	res = w.Result()
+	res := w.Result()
 	defer res.Body.Close()
-	data, err = ioutil.ReadAll(res.Body)
+	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		t.Errorf("2.expected error to be nil got %v", err)
 	}
@@ -96,10 +103,69 @@ func TestPrivateNotes(t *testing.T) {
 	if !strings.Contains(string(data), "id=\"secretURL\"") {
 		t.Errorf("2.a Expected a secreUrl link but wasn't found, got %v", string(data))
 	}
-	// // 2.b Check for button
-	// t.Log("2.b Checking for the submit button")
-	// if !strings.Contains(string(data), "<input type=\"submit\"") {
-	// 	t.Errorf("2.b Expected a submit button but wasn't found, got %v", string(data))
-	// }
+}
 
+func testConfirm(t *testing.T) {
+	t.Log("3) Validate the CONFIRM /key?= retrieve")
+	req := httptest.NewRequest(http.MethodGet, "/?key=55a3932290cb72fbc28f5682b4da1e7e2c0c18223a28746ab6953a87b5013f8d", nil)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;")
+	w := httptest.NewRecorder()
+	PrivateNotes(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("3.expected error to be nil got %v", err)
+	}
+	// 2.a Check for secretUrl
+	t.Log("3.a Checking for secreUrl link")
+	if !strings.Contains(string(data), "<input type=\"submit\"") {
+		t.Errorf("3.a Expected a submit button but wasn't found, got %v", string(data))
+	}
+}
+
+func testResult(t *testing.T) {
+	t.Log("4) Validate the RESULT /?key= page")
+	formData := url.Values{}
+	formData.Set("function", "retrieve")
+	formData.Add("key", "55a3932290cb72fbc28f5682b4da1e7e2c0c18223a28746ab6953a87b5013f8d")
+	formData.Add("g-recaptcha-response", "")
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(formData.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;")
+	w := httptest.NewRecorder()
+	PrivateNotes(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("4.expected error to be nil got %v", err)
+	}
+	// 4.a Check for secretUrl
+	t.Log("4.a Checking for secreUrl link")
+	if !strings.Contains(string(data), "<textarea id=\"plaintext\"") {
+		t.Errorf("4.a Expected a textarea plaintext but wasn't found, got %v", string(data))
+	}
+}
+
+func testWrongResult(t *testing.T) {
+	t.Log("5) Validate the WRONG RESULT /?key= page")
+	formData := url.Values{}
+	formData.Set("function", "retrieve")
+	formData.Add("key", "a-really-wrong-key")
+	formData.Add("g-recaptcha-response", "")
+	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBufferString(formData.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;")
+	w := httptest.NewRecorder()
+	PrivateNotes(w, req)
+	res := w.Result()
+	defer res.Body.Close()
+	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("5.expected error to be nil got %v", err)
+	}
+	// 4.a Check for secretUrl
+	t.Log("5.a Checking for error message")
+	if !strings.Contains(string(data), "Note does not exist") {
+		t.Errorf("5.a Expected to find 'Note does not exist', got %v", string(data))
+	}
 }
