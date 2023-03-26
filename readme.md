@@ -71,4 +71,6 @@ LANG_ERRORBAG_EXPIRATION_TOO_LONG="Expiration time is too long"
 Please note that this application does not currently support resolving SSL, thus if you want to use HTTPS (and you should!) you have to use a proxy like `nginx` in front of this application that offloads SSL. This proxy could also help with serving the logo.
 # Run locally
 
-Run the docker-compose in the `docker` directory to build the image locally.
+`make local` to start the docker compose for building the app and launching the redis dependency
+
+`make test` to run end to end tests
