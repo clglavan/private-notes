@@ -140,6 +140,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 	RECAPTCHA_SECRET := os.Getenv("RECAPTCHA_SECRET")
 	CUSTOM_LOGO := os.Getenv("CUSTOM_LOGO")
 	GA_TAG := os.Getenv("GA_TAG")
+	env := os.Getenv("ENV")
 
 	NOTE_MAX_LENGTH_CLIENT := os.Getenv("NOTE_MAX_LENGTH_CLIENT")
 
@@ -301,20 +302,22 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				t.expiration = time.Second * time.Duration(DEFAULT_EXPIRATION_INT)
 			}
 
-			// Check and verify the recaptcha response token.
-			if err := CheckRecaptcha(RECAPTCHA_SECRET, t.RecaptchaResponse); err != nil {
-				lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
-				data := ErrotPageData{
-					CUSTOM_LOGO: CUSTOM_LOGO,
-					Lang:        lang,
-					GA_TAG:      GA_TAG,
-					PageTitle:   "Error",
+			if env != "testing" {
+				// Check and verify the recaptcha response token.
+				if err := CheckRecaptcha(RECAPTCHA_SECRET, t.RecaptchaResponse); err != nil {
+					lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
+					data := ErrotPageData{
+						CUSTOM_LOGO: CUSTOM_LOGO,
+						Lang:        lang,
+						GA_TAG:      GA_TAG,
+						PageTitle:   "Error",
+					}
+					tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
+					tmpl.ParseGlob("views/assets/*")
+					w.Header().Set("Content-Type", "text/html; charset=utf-8")
+					tmpl.Execute(w, data)
+					return
 				}
-				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
-				tmpl.ParseGlob("views/assets/*")
-				w.Header().Set("Content-Type", "text/html; charset=utf-8")
-				tmpl.Execute(w, data)
-				return
 			}
 
 			// ##################### Prepare the url
@@ -327,11 +330,12 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 			}
 			// ##################### Save the cipherText to redis
 
-			ctx := context.Background()
-
-			err := rdb.Set(ctx, t.Key, t.SecureNote, t.expiration).Err()
-			if err != nil {
-				panic(err)
+			if env != "testing" {
+				ctx := context.Background()
+				err := rdb.Set(ctx, t.Key, t.SecureNote, t.expiration).Err()
+				if err != nil {
+					panic(err)
+				}
 			}
 
 			// ##################### Render the reponse template
