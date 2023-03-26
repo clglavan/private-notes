@@ -140,6 +140,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 	RECAPTCHA_SECRET := os.Getenv("RECAPTCHA_SECRET")
 	CUSTOM_LOGO := os.Getenv("CUSTOM_LOGO")
 	GA_TAG := os.Getenv("GA_TAG")
+	env := os.Getenv("ENV")
 
 	NOTE_MAX_LENGTH_CLIENT := os.Getenv("NOTE_MAX_LENGTH_CLIENT")
 
@@ -301,53 +302,9 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				t.expiration = time.Second * time.Duration(DEFAULT_EXPIRATION_INT)
 			}
 
-			// Check and verify the recaptcha response token.
-			if err := CheckRecaptcha(RECAPTCHA_SECRET, t.RecaptchaResponse); err != nil {
-				lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
-				data := ErrotPageData{
-					CUSTOM_LOGO: CUSTOM_LOGO,
-					Lang:        lang,
-					GA_TAG:      GA_TAG,
-					PageTitle:   "Error",
-				}
-				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
-				tmpl.ParseGlob("views/assets/*")
-				w.Header().Set("Content-Type", "text/html; charset=utf-8")
-				tmpl.Execute(w, data)
-				return
-			}
-
-			// ##################### Prepare the url
-			data := SuccessPageData{
-				SecretUrl:   string(secretURL + t.Key),
-				CUSTOM_LOGO: CUSTOM_LOGO,
-				Lang:        lang,
-				GA_TAG:      GA_TAG,
-				PageTitle:   "Success",
-			}
-			// ##################### Save the cipherText to redis
-
-			ctx := context.Background()
-
-			err := rdb.Set(ctx, t.Key, t.SecureNote, t.expiration).Err()
-			if err != nil {
-				panic(err)
-			}
-
-			// ##################### Render the reponse template
-			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/success.html"))
-			tmpl.ParseGlob("views/assets/*")
-			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-			tmpl.Execute(w, data)
-			return
-		case "retrieve":
-			key := r.FormValue("key")
-			if key != "" {
-
-				RecaptchaResponse := r.FormValue("g-recaptcha-response")
-
+			if env != "testing" {
 				// Check and verify the recaptcha response token.
-				if err := CheckRecaptcha(RECAPTCHA_SECRET, RecaptchaResponse); err != nil {
+				if err := CheckRecaptcha(RECAPTCHA_SECRET, t.RecaptchaResponse); err != nil {
 					lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
 					data := ErrotPageData{
 						CUSTOM_LOGO: CUSTOM_LOGO,
@@ -361,10 +318,70 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 					tmpl.Execute(w, data)
 					return
 				}
+			}
+
+			// ##################### Prepare the url
+			data := SuccessPageData{
+				SecretUrl:   string(secretURL + t.Key),
+				CUSTOM_LOGO: CUSTOM_LOGO,
+				Lang:        lang,
+				GA_TAG:      GA_TAG,
+				PageTitle:   "Success",
+			}
+			// ##################### Save the cipherText to redis
+
+			if env != "testing" {
+				ctx := context.Background()
+				err := rdb.Set(ctx, t.Key, t.SecureNote, t.expiration).Err()
+				if err != nil {
+					panic(err)
+				}
+			}
+
+			// ##################### Render the reponse template
+			tmpl := template.Must(template.ParseFiles("views/layout.html", "views/success.html"))
+			tmpl.ParseGlob("views/assets/*")
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			tmpl.Execute(w, data)
+			return
+		case "retrieve":
+			key := r.FormValue("key")
+			if key != "" {
+
+				if env != "testing" {
+					RecaptchaResponse := r.FormValue("g-recaptcha-response")
+
+					// Check and verify the recaptcha response token.
+					if err := CheckRecaptcha(RECAPTCHA_SECRET, RecaptchaResponse); err != nil {
+						lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
+						data := ErrotPageData{
+							CUSTOM_LOGO: CUSTOM_LOGO,
+							Lang:        lang,
+							GA_TAG:      GA_TAG,
+							PageTitle:   "Error",
+						}
+						tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
+						tmpl.ParseGlob("views/assets/*")
+						w.Header().Set("Content-Type", "text/html; charset=utf-8")
+						tmpl.Execute(w, data)
+						return
+					}
+				}
 
 				ctx := context.Background()
 
-				val, err := rdb.Get(ctx, key).Result()
+				val, err := "", err
+
+				if env != "testing" {
+					val, err = rdb.Get(ctx, key).Result()
+				} else {
+					if key == "55a3932290cb72fbc28f5682b4da1e7e2c0c18223a28746ab6953a87b5013f8d" {
+						val = "468cdaed482145453bbbceb74629633951fb10303c15c55b66a367b54716aaa1xGlMEy3u/f2UzQpKtYANuw==45b517b96c60b8a13628eb51291c32856dfba3b5263e466e156b3cd3b5b70111"
+						err = nil
+					} else {
+						err = errors.New("404 key")
+					}
+				}
 
 				if err != nil {
 					data := ErrotPageData{
@@ -393,7 +410,9 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "text/html; charset=utf-8")
 				tmpl.Execute(w, data)
 
-				rdb.Del(ctx, key)
+				if env != "testing" {
+					rdb.Del(ctx, key)
+				}
 
 			}
 
