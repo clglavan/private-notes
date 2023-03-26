@@ -2,12 +2,15 @@ name: Run tests
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ "master" ]
+  push:
+    branches: [ "master" ]
 
 jobs:
   end-to-end:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Run go test
       env:
         ENV: testing
