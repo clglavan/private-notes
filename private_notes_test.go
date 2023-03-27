@@ -13,8 +13,8 @@ import (
 func TestPrivateNotes(t *testing.T) {
 
 	t.Log("Preparing the environment")
-	t.Setenv("RECAPTCHA_SECRET", "6LfrnPQkAAAAAIPBpB3B_SfK5oC-2BIHzkI29ozF")
-	t.Setenv("RECAPTCHA_KEY", "6LfrnPQkAAAAAKSC7plAfp8kutlL9cKpvSWsqgiL")
+	t.Setenv("RECAPTCHA_SECRET", "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
+	t.Setenv("RECAPTCHA_KEY", "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI")
 	t.Setenv("REDIS_HOST", "redis")
 	t.Setenv("REDIS_PORT", "6379")
 	t.Setenv("DEFAULT_EXPIRATION", "3600")
