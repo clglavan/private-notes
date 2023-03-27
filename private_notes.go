@@ -29,6 +29,7 @@ type SecretNote struct {
 	Lang              LangData
 	GA_TAG            string
 	PageTitle         string
+	RECAPTCHA_KEY     string
 }
 
 type IndexPageData struct {
@@ -398,25 +399,49 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 				}
 
 				data := SecretNote{
-					Key:         key,
-					CUSTOM_LOGO: CUSTOM_LOGO,
-					SecureNote:  string(val),
-					Lang:        lang,
-					GA_TAG:      GA_TAG,
-					PageTitle:   "Result",
+					Key:           key,
+					CUSTOM_LOGO:   CUSTOM_LOGO,
+					SecureNote:    string(val),
+					Lang:          lang,
+					GA_TAG:        GA_TAG,
+					PageTitle:     "Result",
+					RECAPTCHA_KEY: RECAPTCHA_KEY,
 				}
 				tmpl := template.Must(template.ParseFiles("views/layout.html", "views/result.html"))
 				tmpl.ParseGlob("views/assets/*")
 				w.Header().Set("Content-Type", "text/html; charset=utf-8")
 				tmpl.Execute(w, data)
 
-				if env != "testing" {
-					rdb.Del(ctx, key)
-				}
-
 			}
 
+		case "delete":
+			key := r.FormValue("key")
+			if key != "" {
+
+				if env != "testing" {
+					RecaptchaResponse := r.FormValue("g-recaptcha-response")
+
+					// Check and verify the recaptcha response token.
+					if err := CheckRecaptcha(RECAPTCHA_SECRET, RecaptchaResponse); err != nil {
+						lang.ERROR_SUBTITLE = "Invalid recaptcha token!"
+						data := ErrotPageData{
+							CUSTOM_LOGO: CUSTOM_LOGO,
+							Lang:        lang,
+							GA_TAG:      GA_TAG,
+							PageTitle:   "Error",
+						}
+						tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
+						tmpl.ParseGlob("views/assets/*")
+						w.Header().Set("Content-Type", "text/html; charset=utf-8")
+						tmpl.Execute(w, data)
+						return
+					}
+				}
+				ctx := context.Background()
+				rdb.Del(ctx, key)
+			}
 		}
+
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
