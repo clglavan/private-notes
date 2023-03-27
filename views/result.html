@@ -27,6 +27,14 @@
 }
 {{end}}
 {{define "content"}}
+<script>
+
+
+</script>
+    <div id="recaptcha" class="g-recaptcha"
+          data-sitekey="{{ .RECAPTCHA_KEY }}"
+          data-callback="onSubmit"
+          data-size="invisible"></div>
     <div class="center">
     {{if .CUSTOM_LOGO}}
     <img src="{{.CUSTOM_LOGO}}" class="logo" loading="lazy" alt="Company Logo" width="200" height="200"></img>
@@ -35,19 +43,24 @@
     <h3>{{.Lang.RESULT_SUBTITLE}}</h1>
 
     <div class="input-box hide" id="passwordBox" >
-        <p>{{.Lang.RESULT_PASSWORD}} <input type="text"   name="secretPassword" id="secretPassword" placeholder="{{.Lang.RESULT_PASSWORD_PLACEHOLDER}}"></p>
+        <p>{{.Lang.RESULT_PASSWORD}} <input type="text" required  name="secretPassword" id="secretPassword" placeholder="{{.Lang.RESULT_PASSWORD_PLACEHOLDER}}"></p>
         
     </div>
     <div class="input-box tooltip">
         <span class="tooltiptext">{{.Lang.RESULT_TOOLTIP}}</span>
         <textarea id="plaintext" onclick="copyDivToClipboard()" class="input-text" rows="10" cols="70" ></textarea>
     </div> 
-    <input type="button" class="hide" id="show" value="Show" onclick="showMessage()">
+    <div id="errors" style="color:red"> </div>
+    <input type="button" class="hide" id="show" value="Show">
+    <!-- <script>onload();</script> -->
+
 </div>
 {{end}}
 
 {{define "pageJavascript"}}
 const simpleCrypto = new SimpleCrypto("{{.Key}}")
+
+document.getElementById("show").addEventListener("click", validate);
 
 try{
     var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
@@ -64,8 +77,15 @@ try{
 function showMessage(){
     var secretPassword = document.getElementById("secretPassword");
     const simpleCrypto = new SimpleCrypto(secretPassword.value)
-    var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
-    document.getElementById("plaintext").innerHTML = decipherText;
+    console.log(decipherText)
+
+    try{
+      var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+      document.getElementById("plaintext").innerHTML = decipherText;
+      deleteNote(grecaptcha.getResponse());
+    }catch(e) {
+      
+    }
 }
 
 function copyDivToClipboard() {
@@ -76,4 +96,55 @@ function copyDivToClipboard() {
     document.execCommand("copy");
     window.getSelection().removeAllRanges();// to deselect
 }
+
+function onSubmit(token) {
+  showMessage();
+}
+
+function validate(event) {
+
+  var valid = true;
+  var secretPassword = document.getElementById("secretPassword");
+  var errors = document.getElementById("errors");
+
+  if (secretPassword.validity.valueMissing){
+      if(!document.getElementById("secretPasswordValueMissing")){
+          var error = document.createElement("p");
+          error.setAttribute("id","secretPasswordValueMissing");
+          error.innerHTML = "{{.Lang.LANG_ERRORBAG_PASSWORD_REQUIRED}}";
+          errors.appendChild(error);
+      }
+      valid = false;
+  } else {
+      var e=document.getElementById("secretPasswordValueMissing");
+      if(e!==null) e.remove();
+  }
+
+  if (valid == true) {
+    grecaptcha.reset();
+    grecaptcha.execute();
+  }
+}
+
+function deleteNote(token) {
+  
+  // Creating Our XMLHttpRequest object 
+  var xhr = new XMLHttpRequest();
+
+
+  // Making our connection  
+  var url = window.location.href+'&g-recaptcha-response='+token+'&function=delete';
+  xhr.open("POST", url, true);
+
+  // function execute after request is successful 
+  xhr.onreadystatechange = function () {
+      if (this.readyState != 4 && this.status != 200) {
+        console.log("Could not delete note!")
+      } 
+      
+  }
+  // Sending our request 
+  xhr.send();
+}
+
 {{end}}
