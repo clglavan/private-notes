@@ -28,4 +28,4 @@ jobs:
         file: docker/Dockerfile
         platforms: linux/amd64,linux/arm64/v8
         push: true
-        tags: clglavan/private-notes:${{  github.ref_name }}"
+        tags: clglavan/private-notes:${{  github.ref_name }}
