@@ -12,12 +12,17 @@ Demo: https://private-notes.glavan.tech/
 # Deployments
 
 The application uses environment variables for configuration.
-Use the `docker/docker-compose-example.yml` as an example to run it out of the box. Copy the `.env.dist` into a new `.env`, and start filling out the variables.
+Use the `docker/docker-compose-example.yml` as an example to run it out of the box.
+
+The bevahiour of the app is defined through environment variables. You can look into the Dockerfile to see the default ones or in the .env.dist.
+
+For quick override of the defaults, copy the `.env.dist` into a new `.env` where you can change the variables you want.
 
 ```bash
-# recaptcha logic is mandatory, you have to generate a recatpcha key from google
-RECAPTCHA_KEY=
-RECAPTCHA_SECRET=
+# recaptcha logic is mandatory, by default the official google test keys are used,
+# please change them with real ones
+RECAPTCHA_KEY=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI
+RECAPTCHA_SECRET=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe
 # if you are using the default docker compose, leave them as they are
 #   otherwise fill in your redis variables
 REDIS_HOST=redis
