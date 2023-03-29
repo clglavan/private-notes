@@ -2,8 +2,8 @@ version: "3.9"
 services:
   web:
     image: "clglavan/private-notes:latest"
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     ports:
       - "80:80"
     restart: always
@@ -13,6 +13,7 @@ services:
       - "6379:6379"
     restart: always
 
+# override the default env vars with a custom .env file starting from .env.dist
 # this application does and will not:
 # - handle SSL, do this in a proxy before reaching private notes, in your own secure manner
 # - serve assets like the logo image and any future ones
