@@ -27,10 +27,7 @@
 }
 {{end}}
 {{define "content"}}
-<script>
 
-
-</script>
     <div id="recaptcha" class="g-recaptcha"
           data-sitekey="{{ .RECAPTCHA_KEY }}"
           data-callback="onSubmit"
@@ -42,7 +39,7 @@
     <h1><a href="/">{{.Lang.RESULT_TITLE}}</a> <i class="fa fa-shield" aria-hidden="true"></i></i></h1>
     <h3>{{.Lang.RESULT_SUBTITLE}}</h1>
 
-    <div class="input-box hide" id="passwordBox" >
+    <div class="input-box" id="passwordBox" style="display: none;">
         <p>{{.Lang.RESULT_PASSWORD}} <input type="text" required  name="secretPassword" id="secretPassword" placeholder="{{.Lang.RESULT_PASSWORD_PLACEHOLDER}}"></p>
         
     </div>
@@ -51,40 +48,29 @@
         <textarea id="plaintext" onclick="copyDivToClipboard()" class="input-text" rows="10" cols="70" readonly></textarea>
     </div> 
     <div id="errors" style="color:red"> </div>
-    <input type="button" class="hide" id="show" value="Show">
+    <input type="button" id="show" value="Show">
     <!-- <script>onload();</script> -->
 
 </div>
 {{end}}
 
 {{define "pageJavascript"}}
+
+
 const simpleCrypto = new SimpleCrypto("{{.Key}}")
 
 document.getElementById("show").addEventListener("click", validate);
 
-try{
-    var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
-    document.getElementById("plaintext").innerHTML = decipherText;
-}catch(e) {
-    var passwordBox = document.getElementById("passwordBox");
-    passwordBox.classList.toggle("hide");
-    passwordBox.classList.toggle("show");
-    var show = document.getElementById("show");
-    show.classList.toggle("hide");
-    show.classList.toggle("show");
-}
 
 function showMessage(){
     var secretPassword = document.getElementById("secretPassword");
     const simpleCrypto = new SimpleCrypto(secretPassword.value)
-    console.log(decipherText)
 
     try{
       var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
       document.getElementById("plaintext").innerHTML = decipherText;
       deleteNote(grecaptcha.getResponse());
     }catch(e) {
-      
     }
 }
 
@@ -103,27 +89,28 @@ function onSubmit(token) {
 
 function validate(event) {
 
-  var valid = true;
+  var sem=0;
+
+  try{
+      var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+      document.getElementById("plaintext").innerHTML = decipherText;
+      sem=1;
+  }catch(e) {
+      var passwordBox = document.getElementById("passwordBox");
+      passwordBox.style.display="block";
+  }
+
+  if(sem){
+    grecaptcha.reset();
+    grecaptcha.execute();
+    deleteNote(grecaptcha.getResponse());
+  }
+
   var secretPassword = document.getElementById("secretPassword");
   var errors = document.getElementById("errors");
 
-  if (secretPassword.validity.valueMissing){
-      if(!document.getElementById("secretPasswordValueMissing")){
-          var error = document.createElement("p");
-          error.setAttribute("id","secretPasswordValueMissing");
-          error.innerHTML = "{{.Lang.LANG_ERRORBAG_PASSWORD_REQUIRED}}";
-          errors.appendChild(error);
-      }
-      valid = false;
-  } else {
-      var e=document.getElementById("secretPasswordValueMissing");
-      if(e!==null) e.remove();
-  }
-
-  if (valid == true) {
-    grecaptcha.reset();
-    grecaptcha.execute();
-  }
+  grecaptcha.reset();
+  grecaptcha.execute();
 }
 
 function deleteNote(token) {
