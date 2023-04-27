@@ -48,7 +48,7 @@
         <textarea id="plaintext" onclick="copyDivToClipboard()" class="input-text" rows="10" cols="70" readonly></textarea>
     </div> 
     <div id="errors" style="color:red"> </div>
-    <input type="button" id="show" value="Show">
+    <input type="submit" id="show" value="Show">
     <!-- <script>onload();</script> -->
 
 </div>
@@ -61,19 +61,6 @@ const simpleCrypto = new SimpleCrypto("{{.Key}}")
 
 document.getElementById("show").addEventListener("click", validate);
 
-
-function showMessage(){
-    var secretPassword = document.getElementById("secretPassword");
-    const simpleCrypto = new SimpleCrypto(secretPassword.value)
-
-    try{
-      var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
-      document.getElementById("plaintext").innerHTML = decipherText;
-      deleteNote(grecaptcha.getResponse());
-    }catch(e) {
-    }
-}
-
 function copyDivToClipboard() {
     var range = document.createRange();
     range.selectNode(document.getElementById("plaintext"));
@@ -83,35 +70,42 @@ function copyDivToClipboard() {
     window.getSelection().removeAllRanges();// to deselect
 }
 
+
+function showMessage(){
+  try{
+    var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+    document.getElementById("plaintext").innerHTML = decipherText;
+    console.log(grecaptcha.getResponse());
+    deleteNote(grecaptcha.getResponse());
+  }catch(e) {
+      var passwordBox = document.getElementById("passwordBox");
+      passwordBox.style.display="block";
+      var secretPassword = document.getElementById("secretPassword");
+      const simpleCrypto = new SimpleCrypto(secretPassword.value)
+
+      try{
+        var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
+        document.getElementById("plaintext").innerHTML = decipherText;
+        console.log(grecaptcha.getResponse());
+        deleteNote(grecaptcha.getResponse());
+      }catch(e) {
+      }
+  }
+  
+}
+
 function onSubmit(token) {
   showMessage();
 }
 
+
 function validate(event) {
-
-  var sem=0;
-
-  try{
-      var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
-      document.getElementById("plaintext").innerHTML = decipherText;
-      sem=1;
-  }catch(e) {
-      var passwordBox = document.getElementById("passwordBox");
-      passwordBox.style.display="block";
-  }
-
-  if(sem){
-    grecaptcha.reset();
-    grecaptcha.execute();
-    deleteNote(grecaptcha.getResponse());
-  }
-
-  var secretPassword = document.getElementById("secretPassword");
-  var errors = document.getElementById("errors");
 
   grecaptcha.reset();
   grecaptcha.execute();
+
 }
+
 
 function deleteNote(token) {
   

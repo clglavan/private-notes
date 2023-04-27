@@ -431,6 +431,7 @@ func PrivateNotes(w http.ResponseWriter, r *http.Request) {
 							PageTitle:   "Error",
 						}
 						tmpl := template.Must(template.ParseFiles("views/layout.html", "views/error.html"))
+						http.Error(w, "Recaptcha invalid", http.StatusForbidden)
 						tmpl.ParseGlob("views/assets/*")
 						w.Header().Set("Content-Type", "text/html; charset=utf-8")
 						tmpl.Execute(w, data)
