@@ -75,7 +75,6 @@ function showMessage(){
   try{
     var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
     document.getElementById("plaintext").innerHTML = decipherText;
-    console.log(grecaptcha.getResponse());
     deleteNote(grecaptcha.getResponse());
   }catch(e) {
       var passwordBox = document.getElementById("passwordBox");
@@ -86,7 +85,6 @@ function showMessage(){
       try{
         var decipherText = simpleCrypto.decrypt("{{.SecureNote}}")
         document.getElementById("plaintext").innerHTML = decipherText;
-        console.log(grecaptcha.getResponse());
         deleteNote(grecaptcha.getResponse());
       }catch(e) {
       }
