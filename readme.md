@@ -11,11 +11,11 @@ Demo: https://private-notes.glavan.tech/
 
 # Deployments
 
-The application uses environment variables for configuration.
+The application uses environment variables for configuration. 
 Use the `docker/docker-compose-example.yml` as an example to run it out of the box.
 
 The bevahiour of the app is defined through environment variables. You can look into the Dockerfile to see the default ones or in the .env.dist.
-
+ 
 For quick override of the defaults, copy the `.env.dist` into a new `.env` where you can change the variables you want.
 
 ```bash
