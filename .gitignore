@@ -5,3 +5,4 @@ local
 .cloud-function-local
 .old-readme.md
 .env
+.DS_Store

@@ -7,7 +7,7 @@ Send private notes over the internet as one time links that destroy themselves a
 
 This app wishes to provide an open-source alternative for managed solutions of similar usecase. Advantages include being able to save the contents of messages on your organization's own cloud resources and possibility for custom branding.
 
-Demo: https://private-notes.glavan.tech/
+Demo: https://privatenotes.click/
 
 # Deployments
 
